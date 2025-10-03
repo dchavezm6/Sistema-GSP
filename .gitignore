@@ -19,6 +19,7 @@ staticfiles/
 venv/
 env/
 ENV/
+municipal_env/
 .venv
 
 # Variables de entorno - MUY IMPORTANTE
