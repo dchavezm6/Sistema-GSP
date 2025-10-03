@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}Evaluaciones de Satisfacción - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-dark">
+                <i class="bi bi-star-fill"></i> Evaluaciones de Satisfacción Ciudadana
+            </h2>
+            <p class="text-muted">Calificaciones y comentarios de los servicios prestados</p>
+        </div>
+    </div>
+
+    <!-- Estadísticas resumen -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3>{{ avg_rating|floatformat:1 }}/5</h3>
+                    <p class="mb-0">Promedio General</p>
+                    <div class="mt-2">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= avg_rating %}
+                                <i class="bi bi-star-fill"></i>
+                            {% else %}
+                                <i class="bi bi-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>{{ avg_response_time|floatformat:1 }}/5</h3>
+                    <p class="mb-0">Tiempo de Respuesta</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ avg_quality|floatformat:1 }}/5</h3>
+                    <p class="mb-0">Calidad del Servicio</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ recommend_percentage|floatformat:0 }}%</h3>
+                    <p class="mb-0">Recomendarían</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Filtrar por calificación</label>
+                    <select name="rating" class="form-control">
+                        <option value="">Todas</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                        <option value="4">⭐⭐⭐⭐ (4)</option>
+                        <option value="3">⭐⭐⭐ (3)</option>
+                        <option value="2">⭐⭐ (2)</option>
+                        <option value="1">⭐ (1)</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de evaluaciones -->
+    <div class="row">
+        {% for evaluation in evaluations %}
+        <div class="col-12 mb-3">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <strong>Ticket: {{ evaluation.request.ticket_number }}</strong>
+                            <br>
+                            <small class="text-muted">{{ evaluation.request.title }}</small>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">Ciudadano:</small><br>
+                            {{ evaluation.request.citizen.get_full_name|default:evaluation.request.citizen.username }}
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <small class="text-muted">{{ evaluation.created_at|date:"d/m/Y H:i" }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <strong>Calificación General</strong>
+                            <div class="text-warning fs-5">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= evaluation.rating %}
+                                        <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="text-dark ms-2">{{ evaluation.rating }}/5</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Tiempo de Respuesta</strong>
+                            <div class="text-info fs-5">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= evaluation.response_time_rating %}
+                                        <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="text-dark ms-2">{{ evaluation.response_time_rating }}/5</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Calidad del Trabajo</strong>
+                            <div class="text-success fs-5">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= evaluation.quality_rating %}
+                                        <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="text-dark ms-2">{{ evaluation.quality_rating }}/5</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            {% if evaluation.technician_rating %}
+                            <strong>Técnico</strong>
+                            <div class="text-primary fs-5">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= evaluation.technician_rating %}
+                                        <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                        <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="text-dark ms-2">{{ evaluation.technician_rating }}/5</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if evaluation.comments %}
+                    <div class="alert alert-light mb-2">
+                        <strong><i class="bi bi-chat-left-text"></i> Comentarios:</strong>
+                        <p class="mb-0 mt-2">{{ evaluation.comments }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-2">
+                        <span class="badge bg-{{ evaluation.would_recommend|yesno:'success,danger' }}">
+                            {% if evaluation.would_recommend %}
+                                <i class="bi bi-hand-thumbs-up"></i> Recomendaría el servicio
+                            {% else %}
+                                <i class="bi bi-hand-thumbs-down"></i> No recomendaría el servicio
+                            {% endif %}
+                        </span>
+                        <span class="badge bg-secondary">
+                            {{ evaluation.request.service_type.name }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'requests:detail' evaluation.request.ticket_number %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i> Ver Solicitud Completa
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle display-4"></i>
+                <h4>No hay evaluaciones aún</h4>
+                <p>Las evaluaciones de satisfacción aparecerán aquí una vez que los ciudadanos evalúen los servicios completados.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <a href="{% url 'reports:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

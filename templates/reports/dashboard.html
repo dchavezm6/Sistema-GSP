@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard de Reportes - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        border-left: 4px solid #007bff;
+        transition: transform 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-dark">
+                <i class="bi bi-graph-up"></i> Dashboard de Reportes y Estadísticas
+            </h2>
+            <p class="text-muted">Período: {{ date_from|date:"d/m/Y" }} - {{ date_to|date:"d/m/Y" }}</p>
+        </div>
+    </div>
+
+    <!-- Estadísticas principales -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Total Solicitudes</h6>
+                            <h2 class="mb-0">{{ general_stats.total_requests }}</h2>
+                        </div>
+                        <i class="bi bi-file-earmark-text display-4 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Pendientes</h6>
+                            <h2 class="mb-0">{{ general_stats.pending }}</h2>
+                        </div>
+                        <i class="bi bi-clock display-4 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">En Progreso</h6>
+                            <h2 class="mb-0">{{ general_stats.in_progress }}</h2>
+                        </div>
+                        <i class="bi bi-gear display-4 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase mb-1">Completadas</h6>
+                            <h2 class="mb-0">{{ general_stats.completed }}</h2>
+                        </div>
+                        <i class="bi bi-check-circle display-4 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs adicionales -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Tasa de Completación</h6>
+                    <h3 class="text-success">{{ general_stats.completion_rate|floatformat:1 }}%</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Tiempo Promedio</h6>
+                    <h3 class="text-primary">{{ general_stats.average_completion_days|floatformat:1 }} días</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-2">Satisfacción Promedio</h6>
+                    <h3 class="text-warning">
+                        {% if satisfaction_stats %}
+                            {{ satisfaction_stats.average_rating|floatformat:1 }}/5 ⭐
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Solicitudes por Tipo de Servicio</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="serviceTypeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Solicitudes por Área</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="areaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tendencia mensual -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Tendencia de Solicitudes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rendimiento de técnicos -->
+    {% if technician_performance %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-people"></i> Rendimiento de Técnicos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Técnico</th>
+                                    <th>Total Tareas</th>
+                                    <th>Completadas</th>
+                                    <th>En Progreso</th>
+                                    <th>Horas Promedio</th>
+                                    <th>Costo Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for tech in technician_performance %}
+                                <tr>
+                                    <td>{{ tech.assigned_to__first_name }} {{ tech.assigned_to__last_name }}</td>
+                                    <td>{{ tech.total_tasks }}</td>
+                                    <td><span class="badge bg-success">{{ tech.completed_tasks }}</span></td>
+                                    <td><span class="badge bg-primary">{{ tech.in_progress_tasks }}</span></td>
+                                    <td>{{ tech.avg_hours|default:"N/A"|floatformat:1 }}</td>
+                                    <td>Q {{ tech.total_cost|default:"0"|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Formulario para generar reportes personalizados -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-pdf"></i> Generar Reporte Personalizado</h5>
+                </div>
+                <div class="card-body">
+                    {% load crispy_forms_tags %}
+                    <form method="post" action="{% url 'reports:generate' %}">
+                        {% csrf_token %}
+                        {% crispy form %}
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-download"></i> Acciones Rápidas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="window.print()">
+                            <i class="bi bi-printer"></i> Imprimir Dashboard
+                        </button>
+                        <a href="{% url 'reports:export' %}?type=general&date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}" class="btn btn-outline-success">
+                            <i class="bi bi-file-earmark-excel"></i> Exportar Datos (JSON)
+                        </a>
+                        <a href="{% url 'reports:history' %}" class="btn btn-outline-info">
+                            <i class="bi bi-clock-history"></i> Ver Historial de Reportes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Gráfico de pastel - Tipos de servicio
+    const serviceData = {{ service_chart_data|safe }};
+    const serviceCtx = document.getElementById('serviceTypeChart').getContext('2d');
+    new Chart(serviceCtx, {
+        type: 'pie',
+        data: {
+            labels: serviceData.labels,
+            datasets: [{
+                data: serviceData.data,
+                backgroundColor: [
+                    '#007bff', '#28a745', '#ffc107', '#dc3545', 
+                    '#17a2b8', '#6c757d', '#fd7e14', '#20c997'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Gráfico de barras - Áreas
+    const areaData = {{ area_chart_data|safe }};
+    const areaCtx = document.getElementById('areaChart').getContext('2d');
+    new Chart(areaCtx, {
+        type: 'bar',
+        data: {
+            labels: areaData.labels,
+            datasets: [
+                {
+                    label: 'Total',
+                    data: areaData.datasets.total,
+                    backgroundColor: '#007bff'
+                },
+                {
+                    label: 'Completadas',
+                    data: areaData.datasets.completed,
+                    backgroundColor: '#28a745'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Gráfico de línea - Tendencia
+    const trendData = {{ monthly_trend_data|safe }};
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: trendData.labels.map(m => 'Mes ' + m),
+            datasets: [{
+                label: 'Solicitudes',
+                data: trendData.data,
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

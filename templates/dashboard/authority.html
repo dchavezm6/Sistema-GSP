@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Autoridad - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-dark">
+                <i class="bi bi-graph-up"></i>
+                Panel de Autoridad
+            </h2>
+            <p class="text-muted">Supervisión y toma de decisiones</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card card-dashboard bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-data display-4 mb-3"></i>
+                    <h5>Reportes Ejecutivos</h5>
+                    <p>Estadísticas generales</p>
+                    <a href="{% url 'reports:dashboard' %}" class="btn btn-light">
+                        <i class="bi bi-graph-up"></i> Ver
+                    </a>
+                </div>
+            </div>
+        </div>
+
+       <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card card-dashboard bg-success text-white">
+                 <div class="card-body text-center">
+                    <i class="bi bi-people display-4 mb-3"></i>
+                    <h5>Satisfacción Ciudadana</h5>
+                    <p>Evaluaciones y comentarios</p>
+                    <a href="{% url 'reports:satisfaction_list' %}" class="btn btn-light">
+                    <i class="bi bi-star"></i> Ver
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card card-dashboard bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-event display-4 mb-3"></i>
+                    <h5>Planificación</h5>
+                    <p>Calendarios y campañas</p>
+                    <button class="btn btn-light" onclick="alert('Próximamente')">
+                        <i class="bi bi-calendar"></i> Ver
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

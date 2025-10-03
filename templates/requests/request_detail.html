@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ request.ticket_number }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Header con información básica -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="mb-0">
+                                <i class="bi bi-ticket-detailed"></i>
+                                {{ request.title }}
+                            </h4>
+                            <p class="mb-0 mt-1">Ticket: {{ request.ticket_number }}</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-{{ request.get_status_display_class }} fs-6 me-2">
+                                {{ request.get_status_display }}
+                            </span>
+                            <span class="badge bg-{{ request.get_priority_display_class }} fs-6">
+                                {{ request.get_priority_display }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Servicio:</strong> {{ request.service_type.name }}</p>
+                            <p><strong>Tipo:</strong> {{ request.get_request_type_display }}</p>
+                            {% if request.service_area %}
+                            <p><strong>Área:</strong> {{ request.service_area.name }}</p>
+                            {% endif %}
+                            <p><strong>Ciudadano:</strong> {{ request.citizen.get_full_name|default:request.citizen.username }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Creada:</strong> {{ request.created_at|date:"d/m/Y H:i" }}</p>
+                            <p><strong>Última actualización:</strong> {{ request.updated_at|date:"d/m/Y H:i" }}</p>
+                            {% if request.assigned_to %}
+                            <p><strong>Asignado a:</strong> {{ request.assigned_to.get_full_name }}</p>
+                            {% endif %}
+                            {% if request.expected_completion %}
+                            <p><strong>Fecha estimada:</strong> {{ request.expected_completion|date:"d/m/Y" }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h6><strong>Descripción:</strong></h6>
+                            <p>{{ request.description|linebreaks }}</p>
+
+                            <h6><strong>Dirección:</strong></h6>
+                            <p>{{ request.address|linebreaks }}</p>
+
+                            {% if request.notes %}
+                            <h6><strong>Notas adicionales:</strong></h6>
+                            <p>{{ request.notes|linebreaks }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Columna principal - Imágenes y comentarios -->
+        <div class="col-lg-8">
+            <!-- Imágenes -->
+            {% if request.images.exists %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-images"></i> Evidencia Fotográfica</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for image in request.images.all %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <img src="{{ image.image.url }}" class="card-img-top" alt="{{ image.description }}" style="height: 200px; object-fit: cover;">
+                                <div class="card-body p-2">
+                                    <small class="text-muted">
+                                        <strong>{{ image.get_image_type_display }}</strong>
+                                        {% if image.description %} - {{ image.description }}{% endif %}
+                                        <br>{{ image.uploaded_at|date:"d/m/Y H:i" }} por {{ image.uploaded_by.get_full_name }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Agregar imagen -->
+            {% if user.role == 'CITIZEN' and request.citizen == user or user.role in 'ADMIN,MANAGER,TECHNICIAN' %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-camera"></i> Agregar Imagen</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'requests:add_image' request.ticket_number %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% crispy image_form %}
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Comentarios -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-chat-dots"></i> Comentarios</h5>
+                </div>
+                <div class="card-body">
+                    {% for comment in comments %}
+                    <div class="border-start border-primary ps-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <strong>{{ comment.user.get_full_name|default:comment.user.username }}</strong>
+                            <div>
+                                <small class="text-muted">{{ comment.created_at|date:"d/m/Y H:i" }}</small>
+                                {% if comment.is_internal %}
+                                <span class="badge bg-warning ms-1">Interno</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <p class="mb-0 mt-1">{{ comment.comment|linebreaks }}</p>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No hay comentarios aún.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Agregar comentario -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-chat-plus"></i> Agregar Comentario</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'requests:add_comment' request.ticket_number %}">
+                        {% csrf_token %}
+                        {% crispy comment_form %}
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna lateral - Acciones y historial -->
+        <div class="col-lg-4">
+            <!-- Acciones -->
+            <div class="card mb-4">
+                {% if user.role in 'ADMIN,MANAGER' and not request.assignment %}
+                <a href="{% url 'assignments:create' request.ticket_number %}" class="btn btn-warning">
+                    <i class="bi bi-person-plus"></i> Asignar Tarea
+                </a>
+{% endif %}
+                {% if user.role == 'CITIZEN' and request.citizen == user and request.status == 'COMPLETED' and not request.satisfaction %}
+                    <a href="{% url 'reports:satisfaction_survey' request.ticket_number %}" class="btn btn-success">
+                        <i class="bi bi-star"></i> Evaluar Servicio
+                    </a>
+                {% endif %}
+
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if user.role == 'CITIZEN' and request.citizen == user %}
+                            {% if request.can_be_cancelled_by_citizen %}
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                <i class="bi bi-x-circle"></i> Cancelar Solicitud
+                            </button>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if user.role in 'ADMIN,MANAGER,TECHNICIAN' %}
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#statusModal">
+                            <i class="bi bi-arrow-repeat"></i> Cambiar Estado
+                        </button>
+                        {% endif %}
+
+                        <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a Lista
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial de estados -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Historial de Estados</h6>
+                </div>
+                <div class="card-body">
+                    {% for history in request.status_history.all %}
+                    <div class="border-start border-secondary ps-3 mb-2">
+                        <div class="d-flex justify-content-between">
+                            <small>
+                                {% if history.from_status %}
+                                    <strong>{{ history.get_from_status_display }}</strong> → <strong>{{ history.get_to_status_display }}</strong>
+                                {% else %}
+                                    <strong>{{ history.get_to_status_display }}</strong>
+                                {% endif %}
+                            </small>
+                            <small class="text-muted">{{ history.created_at|date:"d/m H:i" }}</small>
+                        </div>
+                        <small class="text-muted">Por: {{ history.changed_by.get_full_name }}</small>
+                        {% if history.reason %}
+                        <p class="mb-0 mt-1"><small>{{ history.reason }}</small></p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para cancelar solicitud -->
+{% if user.role == 'CITIZEN' and request.citizen == user and request.can_be_cancelled_by_citizen %}
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancelar Solicitud</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea cancelar esta solicitud?</p>
+                <p class="text-muted">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, mantener</button>
+                <form method="post" action="{% url 'requests:cancel' request.ticket_number %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Sí, cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Modal para cambiar estado -->
+{% if user.role in 'ADMIN,MANAGER,TECHNICIAN' %}
+<div class="modal fade" id="statusModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cambiar Estado de la Solicitud</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'requests:update_status' request.ticket_number %}">
+                    {% csrf_token %}
+                    {% crispy status_form %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

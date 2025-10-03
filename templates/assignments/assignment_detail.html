@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Tarea {{ assignment.request.ticket_number }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-clipboard-check"></i>
+                        {{ assignment.request.title }}
+                    </h4>
+                    <p class="mb-0">Ticket: {{ assignment.request.ticket_number }}</p>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Estado:</strong> 
+                                <span class="badge bg-{{ assignment.get_status_display_class }}">
+                                    {{ assignment.get_status_display }}
+                                </span>
+                            </p>
+                            <p><strong>Prioridad:</strong> 
+                                <span class="badge bg-secondary">{{ assignment.get_priority_display }}</span>
+                            </p>
+                            <p><strong>Asignado a:</strong> {{ assignment.assigned_to.get_full_name }}</p>
+                            <p><strong>Asignado por:</strong> {{ assignment.assigned_by.get_full_name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Fecha asignación:</strong> {{ assignment.assigned_at|date:"d/m/Y H:i" }}</p>
+                            {% if assignment.estimated_completion %}
+                            <p><strong>Fecha estimada:</strong> {{ assignment.estimated_completion|date:"d/m/Y H:i" }}</p>
+                            {% endif %}
+                            {% if assignment.estimated_hours %}
+                            <p><strong>Horas estimadas:</strong> {{ assignment.estimated_hours }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if assignment.instructions %}
+                    <hr>
+                    <h6><strong>Instrucciones:</strong></h6>
+                    <p>{{ assignment.instructions|linebreaks }}</p>
+                    {% endif %}
+
+                    {% if assignment.materials_needed %}
+                    <hr>
+                    <h6><strong>
+                        {% if assignment.status == 'COMPLETED' %}
+                            Materiales Utilizados:
+                        {% else %}
+                            Notas de Materiales:
+                        {% endif %}
+                    </strong></h6>
+                    <p>{{ assignment.materials_needed|linebreaks }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Información de la solicitud -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Información de la Solicitud</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Descripción:</strong></p>
+                    <p>{{ assignment.request.description|linebreaks }}</p>
+                    <p><strong>Dirección:</strong></p>
+                    <p>{{ assignment.request.address|linebreaks }}</p>
+                </div>
+            </div>
+
+            <!-- Actualizaciones -->
+            {% if updates %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Actualizaciones de Progreso</h5>
+                </div>
+                <div class="card-body">
+                    {% for update in updates %}
+                    <div class="border-start border-primary ps-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ update.updated_by.get_full_name }}</strong>
+                            <small class="text-muted">{{ update.created_at|date:"d/m/Y H:i" }}</small>
+                        </div>
+                        <p class="mb-1"><strong>Progreso:</strong> {{ update.progress_percentage }}%</p>
+                        <p class="mb-0">{{ update.description }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Formulario de actualización -->
+            {% if update_form %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-pencil"></i> Registrar Progreso</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'assignments:add_update' assignment.pk %}">
+                        {% csrf_token %}
+                        {% crispy update_form %}
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Acciones -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-gear"></i> Acciones</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% if user == assignment.assigned_to %}
+                            {% if assignment.status == 'ASSIGNED' %}
+                            <form method="post" action="{% url 'assignments:accept' assignment.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-check-circle"></i> Aceptar Tarea
+                                </button>
+                            </form>
+                            {% endif %}
+                            
+                            {% if assignment.status in 'ASSIGNED,ACCEPTED' %}
+                            <form method="post" action="{% url 'assignments:start' assignment.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-play-circle"></i> Iniciar Tarea
+                                </button>
+                            </form>
+                            {% endif %}
+                            
+                            {% if assignment.status == 'IN_PROGRESS' and complete_form %}
+                            <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#completeModal">
+                                <i class="bi bi-check-square"></i> Completar Tarea
+                            </button>
+                            {% endif %}
+                        {% endif %}
+                        
+                        <a href="{% url 'requests:detail' assignment.request.ticket_number %}" class="btn btn-outline-primary">
+                            <i class="bi bi-file-earmark-text"></i> Ver Solicitud
+                        </a>
+                        
+                        <a href="{% url 'assignments:list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para completar tarea -->
+{% if complete_form %}
+<div class="modal fade" id="completeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Completar Tarea</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'assignments:complete' assignment.pk %}" id="completeForm">
+                    {% csrf_token %}
+                    {% crispy complete_form %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Mis Solicitudes - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold text-dark">
+                        <i class="bi bi-list-ul"></i>
+                        {% if user.role == 'CITIZEN' %}
+                            Mis Solicitudes
+                        {% else %}
+                            Gestión de Solicitudes
+                        {% endif %}
+                    </h2>
+                    <p class="text-muted mb-0">Total: {{ total_requests }} solicitudes</p>
+                </div>
+                {% if user.role == 'CITIZEN' %}
+                <div>
+                    <a href="{% url 'requests:create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Nueva Solicitud
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        {% if user.role == 'CITIZEN' %}
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.pending }}</h3>
+                    <p class="mb-0">Pendientes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.in_progress }}</h3>
+                    <p class="mb-0">En Proceso</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.completed }}</h3>
+                    <p class="mb-0">Completadas</p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.pending }}</h3>
+                    <p class="mb-0">Pendientes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.in_progress }}</h3>
+                    <p class="mb-0">En Proceso</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.overdue }}</h3>
+                    <p class="mb-0">Vencidas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>{{ total_requests }}</h3>
+                    <p class="mb-0">Total</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Filtros de búsqueda -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-funnel"></i> Filtros de Búsqueda
+                <button class="btn btn-sm btn-outline-secondary float-end" type="button" data-bs-toggle="collapse" data-bs-target="#searchFilters">
+                    <i class="bi bi-chevron-down"></i>
+                </button>
+            </h5>
+        </div>
+        <div class="collapse" id="searchFilters">
+            <div class="card-body">
+                {% crispy search_form %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de solicitudes -->
+    <div class="row">
+        {% for request in requests %}
+        <div class="col-12 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-2">
+                                <h5 class="mb-0 me-3">
+                                    <a href="{% url 'requests:detail' request.ticket_number %}" class="text-decoration-none">
+                                        {{ request.title }}
+                                    </a>
+                                </h5>
+                                <span class="badge bg-{{ request.get_status_display_class }} me-2">
+                                    {{ request.get_status_display }}
+                                </span>
+                                <span class="badge bg-{{ request.get_priority_display_class }}">
+                                    {{ request.get_priority_display }}
+                                </span>
+                                {% if request.is_overdue %}
+                                <span class="badge bg-danger ms-2">
+                                    <i class="bi bi-exclamation-triangle"></i> Vencida
+                                </span>
+                                {% endif %}
+                            </div>
+                            <p class="text-muted mb-2">
+                                <strong>Ticket:</strong> {{ request.ticket_number }} |
+                                <strong>Servicio:</strong> {{ request.service_type.name }} |
+                                {% if request.service_area %}
+                                <strong>Área:</strong> {{ request.service_area.name }} |
+                                {% endif %}
+                                <strong>Tipo:</strong> {{ request.get_request_type_display }}
+                            </p>
+                            <p class="mb-2">{{ request.description|truncatechars:150 }}</p>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar"></i> {{ request.created_at|date:"d/m/Y H:i" }}
+                                {% if user.role != 'CITIZEN' %}
+                                | <i class="bi bi-person"></i> {{ request.citizen.get_full_name|default:request.citizen.username }}
+                                {% endif %}
+                                {% if request.assigned_to %}
+                                | <i class="bi bi-person-check"></i> Asignado a: {{ request.assigned_to.get_full_name }}
+                                {% endif %}
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="mb-2">
+                                {% if request.images.count > 0 %}
+                                <span class="text-muted">
+                                    <i class="bi bi-images"></i> {{ request.images.count }} imagen{{ request.images.count|pluralize:"es" }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'requests:detail' request.ticket_number %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye"></i> Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle display-4 mb-3"></i>
+                <h4>No se encontraron solicitudes</h4>
+                <p class="mb-0">
+                    {% if user.role == 'CITIZEN' %}
+                        No has creado ninguna solicitud aún.
+                        <a href="{% url 'requests:create' %}" class="btn btn-primary mt-2">
+                            <i class="bi bi-plus-circle"></i> Crear Primera Solicitud
+                        </a>
+                    {% else %}
+                        No hay solicitudes que coincidan con los criterios de búsqueda.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginación -->
+    {% if is_paginated %}
+    <nav aria-label="Paginación de solicitudes">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if request.GET.search_term %}&search_term={{ request.GET.search_term }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Primera</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search_term %}&search_term={{ request.GET.search_term }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Anterior</a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search_term %}&search_term={{ request.GET.search_term }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Siguiente</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search_term %}&search_term={{ request.GET.search_term }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Última</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

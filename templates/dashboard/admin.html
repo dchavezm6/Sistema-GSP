@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Administrador - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-dark">
+                <i class="bi bi-gear"></i>
+                Panel de Administración
+            </h2>
+            <p class="text-muted">Gestión completa del sistema municipal</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card card-dashboard bg-dark text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-people display-4 mb-3"></i>
+                    <h5>Gestión de Usuarios</h5>
+                    <a href="/admin/authentication/user/" class="btn btn-light">
+                        <i class="bi bi-gear"></i> Administrar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card card-dashboard bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-data display-4 mb-3"></i>
+                    <h5>Reportes Generales</h5>
+                    <a href="{% url 'reports:dashboard' %}" class="btn btn-light">
+                        <i class="bi bi-graph-up"></i> Ver
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card card-dashboard bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-tools display-4 mb-3"></i>
+                    <h5>Panel Admin Django</h5>
+                    <a href="/admin/" class="btn btn-light">
+                        <i class="bi bi-wrench"></i> Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card card-dashboard bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-list-check display-4 mb-3"></i>
+                    <h5>Solicitudes</h5>
+                    <a href="{% url 'requests:list' %}" class="btn btn-light">
+                        <i class="bi bi-eye"></i> Ver Todas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card card-dashboard bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-check display-4 mb-3"></i>
+                    <h5>Asignaciones</h5>
+                    <a href="{% url 'assignments:list' %}" class="btn btn-light">
+                        <i class="bi bi-list"></i> Ver Tareas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card card-dashboard bg-secondary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-star display-4 mb-3"></i>
+                    <h5>Evaluaciones</h5>
+                    <a href="{% url 'reports:satisfaction_list' %}" class="btn btn-light">
+                        <i class="bi bi-star"></i> Ver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

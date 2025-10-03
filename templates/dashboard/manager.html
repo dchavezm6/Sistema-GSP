@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Encargado - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-dark">
+                <i class="bi bi-clipboard-check"></i>
+                Panel de Gestión
+            </h2>
+            <p class="text-muted">Asignación y seguimiento de tareas</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card card-dashboard bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-inbox display-4 mb-3"></i>
+                    <h5>Solicitudes Pendientes</h5>
+                    <h3>0</h3>
+                    <a href="{% url 'requests:list' %}?status=PENDING" class="btn btn-light">
+                        <i class="bi bi-eye"></i> Revisar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card card-dashboard bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-workspace display-4 mb-3"></i>
+                    <h5>Gestionar Tareas</h5>
+                    <p>Ver y asignar tareas a técnicos</p>
+                    <a href="{% url 'assignments:list' %}" class="btn btn-light">
+                        <i class="bi bi-list"></i> Ver Tareas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card card-dashboard bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-bar-chart display-4 mb-3"></i>
+                    <h5>Reportes</h5>
+                    <p>Estadísticas de gestión</p>
+                    <a href="{% url 'reports:dashboard' %}" class="btn btn-light">
+                        <i class="bi bi-graph-up"></i> Ver
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-4">
+            <div class="card card-dashboard bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-list-check display-4 mb-3"></i>
+                    <h5>Todas las Solicitudes</h5>
+                    <p>Ver todas las solicitudes del sistema</p>
+                    <a href="{% url 'requests:list' %}" class="btn btn-light">
+                        <i class="bi bi-eye"></i> Ver Todas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6 mb-4">
+            <div class="card card-dashboard bg-secondary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-people display-4 mb-3"></i>
+                    <h5>Gestión de Personal</h5>
+                    <p>Ver técnicos y asignaciones</p>
+                    <a href="{% url 'assignments:list' %}" class="btn btn-light">
+                        <i class="bi bi-person-lines-fill"></i> Ver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

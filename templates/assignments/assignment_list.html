@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Tareas - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold text-dark">
+                        <i class="bi bi-clipboard-check"></i>
+                        {% if user.role == 'TECHNICIAN' %}
+                            Mis Tareas Asignadas
+                        {% else %}
+                            Gestión de Asignaciones
+                        {% endif %}
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.assigned }}</h3>
+                    <p class="mb-0">Asignadas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.in_progress }}</h3>
+                    <p class="mb-0">En Progreso</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.completed|default:0 }}</h3>
+                    <p class="mb-0">Completadas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <select name="status" class="form-control">
+                        <option value="">Todos los estados</option>
+                        <option value="ASSIGNED">Asignada</option>
+                        <option value="ACCEPTED">Aceptada</option>
+                        <option value="IN_PROGRESS">En Progreso</option>
+                        <option value="COMPLETED">Completada</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de asignaciones -->
+    <div class="row">
+        {% for assignment in assignments %}
+        <div class="col-12 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-2">
+                                <h5 class="mb-0 me-3">
+                                    <a href="{% url 'assignments:detail' assignment.pk %}" class="text-decoration-none">
+                                        {{ assignment.request.title }}
+                                    </a>
+                                </h5>
+                                <span class="badge bg-{{ assignment.get_status_display_class }} me-2">
+                                    {{ assignment.get_status_display }}
+                                </span>
+                                <span class="badge bg-secondary">
+                                    {{ assignment.get_priority_display }}
+                                </span>
+                                {% if assignment.is_overdue %}
+                                <span class="badge bg-danger ms-2">
+                                    <i class="bi bi-exclamation-triangle"></i> Vencida
+                                </span>
+                                {% endif %}
+                            </div>
+                            <p class="text-muted mb-2">
+                                <strong>Ticket:</strong> {{ assignment.request.ticket_number }} |
+                                <strong>Asignada:</strong> {{ assignment.assigned_at|date:"d/m/Y H:i" }}
+                                {% if assignment.estimated_completion %}
+                                | <strong>Estimada:</strong> {{ assignment.estimated_completion|date:"d/m/Y H:i" }}
+                                {% endif %}
+                            </p>
+                            {% if user.role != 'TECHNICIAN' %}
+                            <small class="text-muted">
+                                <i class="bi bi-person"></i> Asignado a: {{ assignment.assigned_to.get_full_name }}
+                            </small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="{% url 'assignments:detail' assignment.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye"></i> Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle display-4"></i>
+                <h4>No hay tareas asignadas</h4>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

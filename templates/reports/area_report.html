@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Reporte por Área - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold text-dark">
+                <i class="bi bi-map"></i> Reporte por Área
+            </h2>
+            <p class="text-muted">Período: {{ date_from|date:"d/m/Y" }} - {{ date_to|date:"d/m/Y" }}</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Solicitudes por Área Geográfica</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="areaChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Área</th>
+                                <th>Total</th>
+                                <th>Completadas</th>
+                                <th>% Completadas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for area in area_data %}
+                            <tr>
+                                <td><strong>{{ area.service_area__name }}</strong></td>
+                                <td>{{ area.total }}</td>
+                                <td><span class="badge bg-success">{{ area.completed }}</span></td>
+                                <td>{% widthratio area.completed area.total 100 %}%</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <a href="{% url 'reports:dashboard' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    const chartData = {{ chart_data|safe }};
+    const ctx = document.getElementById('areaChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: chartData.labels,
+            datasets: [
+                {
+                    label: 'Total',
+                    data: chartData.datasets.total,
+                    backgroundColor: '#007bff'
+                },
+                {
+                    label: 'Completadas',
+                    data: chartData.datasets.completed,
+                    backgroundColor: '#28a745'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

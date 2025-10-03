@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Rendimiento de Técnicos - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">Rendimiento de Técnicos</h2>
+    <p class="text-muted">Período: {{ date_from|date:"d/m/Y" }} - {{ date_to|date:"d/m/Y" }}</p>
+
+    <div class="card">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Técnico</th>
+                        <th>Total Tareas</th>
+                        <th>Completadas</th>
+                        <th>Horas Promedio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tech in technician_data %}
+                    <tr>
+                        <td>{{ tech.assigned_to__first_name }} {{ tech.assigned_to__last_name }}</td>
+                        <td>{{ tech.total_tasks }}</td>
+                        <td>{{ tech.completed_tasks }}</td>
+                        <td>{{ tech.avg_hours|floatformat:1 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="{% url 'reports:dashboard' %}" class="btn btn-secondary mt-3">Volver</a>
+</div>
+{% endblock %}

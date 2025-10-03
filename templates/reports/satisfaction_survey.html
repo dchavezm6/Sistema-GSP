@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Evaluación de Servicio - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-star"></i> Evaluación de Satisfacción
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info">
+                        <strong>Solicitud:</strong> {{ service_request.ticket_number }}<br>
+                        <strong>Servicio:</strong> {{ service_request.title }}<br>
+                        <strong>Completada:</strong> {{ service_request.completed_at|date:"d/m/Y" }}
+                    </div>
+
+                    <p class="lead mb-4">
+                        Su opinión es muy importante para nosotros. Por favor, evalúe el servicio recibido:
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {% crispy form %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
