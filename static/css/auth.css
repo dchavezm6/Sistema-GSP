@@ -1,0 +1,181 @@
+/* ========================================
+   ESTILOS DE AUTENTICACIÓN
+   Archivo: static/css/auth.css
+   ======================================== */
+
+/* ========================================
+   HERO SECTION - LOGIN/REGISTRO
+   ======================================== */
+.hero-section {
+    background: linear-gradient(135deg, var(--municipal-primary) 0%, var(--municipal-secondary) 100%);
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,101.3C1248,85,1344,75,1392,69.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+    background-size: cover;
+}
+
+/* ========================================
+   CARDS DE AUTENTICACIÓN
+   ======================================== */
+.auth-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.auth-card .card-body {
+    padding: 2.5rem;
+}
+
+/* ========================================
+   ICONOS DE AUTENTICACIÓN
+   ======================================== */
+.auth-icon {
+    font-size: 4rem;
+    color: var(--municipal-primary);
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* ========================================
+   FORMULARIOS DE AUTENTICACIÓN
+   ======================================== */
+.auth-form .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.auth-form .form-control {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.auth-form .form-control:focus {
+    border-color: var(--municipal-primary);
+    box-shadow: 0 0 0 0.2rem rgba(44, 85, 48, 0.15);
+}
+
+.auth-form .btn-lg {
+    padding: 0.875rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 8px;
+}
+
+/* ========================================
+   LINKS DE AUTENTICACIÓN
+   ======================================== */
+.auth-link {
+    color: var(--municipal-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.auth-link:hover {
+    color: var(--municipal-dark);
+    text-decoration: underline;
+}
+
+/* ========================================
+   PERFIL DE USUARIO
+   ======================================== */
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--municipal-primary) 0%, var(--municipal-secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+    margin: 0 auto 1.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.profile-card {
+    background: linear-gradient(to bottom right, #ffffff 0%, #f8f9fa 100%);
+}
+
+/* ========================================
+   BADGE DE ROL
+   ======================================== */
+.role-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-badge.admin {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.role-badge.authority {
+    background-color: #0dcaf0;
+    color: white;
+}
+
+.role-badge.manager {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.role-badge.technician {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.role-badge.citizen {
+    background-color: #198754;
+    color: white;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 576px) {
+    .hero-section {
+        min-height: 40vh;
+    }
+
+    .auth-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .auth-icon {
+        font-size: 3rem;
+    }
+}

@@ -77,26 +77,32 @@
         </div>
     </div>
 
-    <!-- Estadísticas personales -->
+<!-- Estadísticas personales -->
     <div class="row mb-4">
         <div class="col-lg-8">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header bg-municipal text-white">
                     <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Resumen de Actividad</h5>
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-4">
-                            <h3 class="text-primary">0</h3>
-                            <p class="text-muted mb-0">Solicitudes Activas</p>
+                            <div class="stat-card border-0">
+                                <h3 class="text-primary" id="contador-activas">0</h3>
+                                <p class="text-muted mb-0">Solicitudes Activas</p>
+                            </div>
                         </div>
                         <div class="col-4">
-                            <h3 class="text-success">0</h3>
-                            <p class="text-muted mb-0">Solicitudes Completadas</p>
+                            <div class="stat-card border-0">
+                                <h3 class="text-success" id="contador-completadas">0</h3>
+                                <p class="text-muted mb-0">Solicitudes Completadas</p>
+                            </div>
                         </div>
                         <div class="col-4">
-                            <h3 class="text-info">0</h3>
-                            <p class="text-muted mb-0">Evaluaciones Realizadas</p>
+                            <div class="stat-card border-0">
+                                <h3 class="text-info" id="contador-evaluaciones">0</h3>
+                                <p class="text-muted mb-0">Evaluaciones Realizadas</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -105,7 +111,7 @@
 
         <div class="col-lg-4">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header bg-municipal text-white">
                     <h5 class="mb-0"><i class="bi bi-person-circle"></i> Mi Información</h5>
                 </div>
                 <div class="card-body">
@@ -113,12 +119,38 @@
                     <p><strong>Email:</strong> {{ user.email|default:"No registrado" }}</p>
                     <p><strong>Teléfono:</strong> {{ user.phone|default:"No registrado" }}</p>
                     <p class="mb-0"><strong>Registro:</strong> {{ user.date_joined|date:"d/m/Y" }}</p>
-                    <a href="{% url 'authentication:profile' %}" class="btn btn-outline-primary btn-sm mt-2">
+                    <a href="{% url 'authentication:profile' %}" class="btn btn-outline-primary btn-sm mt-3 w-100">
                         <i class="bi bi-pencil"></i> Editar Perfil
                     </a>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    {% block extra_js %}
+    <script>
+        // Animar contadores al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener estadísticas reales del servidor
+            fetch('{% url "requests:stats_api" %}')
+                .then(response => response.json())
+                .then(data => {
+                    // Animar contadores
+                    if (typeof municipalApp !== 'undefined') {
+                        municipalApp.animarContador('contador-activas', data.pending + data.in_progress, 1000);
+                        municipalApp.animarContador('contador-completadas', data.completed, 1000);
+                        municipalApp.animarContador('contador-evaluaciones', 0, 1000);
+                    } else {
+                        // Si municipalApp no está disponible, mostrar valores directamente
+                        document.getElementById('contador-activas').textContent = data.pending + data.in_progress;
+                        document.getElementById('contador-completadas').textContent = data.completed;
+                        document.getElementById('contador-evaluaciones').textContent = 0;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar estadísticas:', error);
+                });
+        });
+    </script>
+    {% endblock %}
 {% endblock %}

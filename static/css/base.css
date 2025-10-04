@@ -1,0 +1,284 @@
+/* ========================================
+   ESTILOS BASE DEL SISTEMA MUNICIPAL
+   Archivo: static/css/base.css
+   ======================================== */
+
+/* ========================================
+   VARIABLES CSS
+   ======================================== */
+:root {
+    /* Colores principales */
+    --municipal-primary: #2c5530;
+    --municipal-secondary: #4a7c59;
+    --municipal-light: #f8f9fa;
+    --municipal-dark: #1a3d1f;
+
+    /* Colores de estado */
+    --color-pendiente: #ffc107;
+    --color-proceso: #0dcaf0;
+    --color-completada: #198754;
+    --color-rechazada: #dc3545;
+
+    /* Espaciado */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+
+    /* Bordes */
+    --border-radius-sm: 0.25rem;
+    --border-radius-md: 0.5rem;
+    --border-radius-lg: 0.75rem;
+
+    /* Sombras */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+    --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+/* ========================================
+   ESTILOS GENERALES
+   ======================================== */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+main {
+    flex: 1;
+}
+
+/* ========================================
+   NAVBAR
+   ======================================== */
+.navbar-municipal {
+    background: linear-gradient(135deg, var(--municipal-primary) 0%, var(--municipal-secondary) 100%);
+    box-shadow: var(--shadow-md);
+}
+
+.navbar-municipal .navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: white !important;
+    transition: opacity 0.3s ease;
+}
+
+.navbar-municipal .navbar-brand:hover {
+    opacity: 0.9;
+}
+
+.navbar-municipal .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-municipal .nav-link:hover {
+    color: white !important;
+}
+
+/* ========================================
+   BOTONES
+   ======================================== */
+.btn-municipal {
+    background-color: var(--municipal-primary);
+    border-color: var(--municipal-primary);
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-municipal:hover {
+    background-color: var(--municipal-dark);
+    border-color: var(--municipal-dark);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-municipal:focus {
+    box-shadow: 0 0 0 0.2rem rgba(44, 85, 48, 0.5);
+}
+
+/* ========================================
+   CARDS
+   ======================================== */
+.card {
+    border: none;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    border-radius: var(--border-radius-md);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-dashboard {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+}
+
+.card-dashboard:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* ========================================
+   BADGES
+   ======================================== */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+.footer-municipal {
+    background-color: var(--municipal-dark);
+    color: white;
+    padding: 2.5rem 0 1.25rem 0;
+    margin-top: auto;
+}
+
+.footer-municipal a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-municipal a:hover {
+    color: white;
+}
+
+.footer-municipal hr {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ========================================
+   ALERTAS Y MENSAJES
+   ======================================== */
+.alert {
+    border: none;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.alert-dismissible .btn-close {
+    padding: 0.75rem;
+}
+
+/* ========================================
+   FORMULARIOS
+   ======================================== */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--municipal-primary);
+    box-shadow: 0 0 0 0.2rem rgba(44, 85, 48, 0.25);
+}
+
+/* ========================================
+   TABLAS
+   ======================================== */
+.table {
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: var(--municipal-primary);
+    color: white;
+    font-weight: 600;
+    border: none;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(44, 85, 48, 0.05);
+}
+
+/* ========================================
+   PAGINACIÓN
+   ======================================== */
+.pagination .page-link {
+    color: var(--municipal-primary);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--municipal-primary);
+    border-color: var(--municipal-primary);
+}
+
+.pagination .page-link:hover {
+    color: var(--municipal-dark);
+}
+
+/* ========================================
+   UTILIDADES
+   ======================================== */
+.text-municipal {
+    color: var(--municipal-primary);
+}
+
+.bg-municipal {
+    background-color: var(--municipal-primary);
+    color: white;
+}
+
+.border-municipal {
+    border-color: var(--municipal-primary) !important;
+}
+
+/* ========================================
+   RESPONSIVO
+   ======================================== */
+@media (max-width: 768px) {
+    .navbar-municipal .navbar-brand {
+        font-size: 1rem;
+    }
+
+    .card-dashboard {
+        margin-bottom: 1rem;
+    }
+}
+
+/* ========================================
+   ANIMACIONES
+   ======================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* ========================================
+   LOADING SPINNER
+   ======================================== */
+.spinner-municipal {
+    border: 3px solid var(--municipal-light);
+    border-top: 3px solid var(--municipal-primary);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
