@@ -1,28 +1,23 @@
-# config/settings/production.py
 
 from .base import *
 from decouple import config, Csv
+import dj_database_url
 import os
 
 DEBUG = False
 
-# Hosts permitidos
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='').split(',') + [
     '.railway.app',
     '.up.railway.app',
 ]
 
-# Database - SIN defaults que apunten a localhost
+# Database usando DATABASE_URL que Railway provee automáticamente
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('PGDATABASE'),      # SIN default
-        'USER': config('PGUSER'),          # SIN default
-        'PASSWORD': config('PGPASSWORD'),  # SIN default
-        'HOST': config('PGHOST'),          # SIN default - CRÍTICO
-        'PORT': config('PGPORT', cast=int),
-        'CONN_MAX_AGE': 600,
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # Security Settings
