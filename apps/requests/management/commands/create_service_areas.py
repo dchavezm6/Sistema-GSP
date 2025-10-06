@@ -6,36 +6,36 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         areas = [
-            {'name':'Cantón Camache chiquito, Sector Godínes'},
-            {'name':'Cantón Camache chiquito, Sector Patricio'},
-            {'name':'Cantón Camache chiquito, Sector Ramirez'},
-            {'name':'Cantón Camache chiquito, Sector Silvestre'},
-            {'name':'Cantón Camache Grande Centro'},
-            {'name':'Cantón Camache Grande, Sector Camino'},
-            {'name':'Cantón Maza, San  Rubén'},
-            {'name':'Cantón San Antoñito'},
-            {'name':'Casco Urbano: Barrio la Unión'},
-            {'name':'Casco Urbano: Barrio Pobre'},
-            {'name':'Casco Urbano: Barrio Rico'},
-            {'name':'Casco Urbano: Colonia el Rastro'},
-            {'name':'Casco Urbano: Colonia el Tigre'},
-            {'name':'Casco Urbano: Colonia Juárez'},
-            {'name':'Casco Urbano: Colonia la Bendición'},
-            {'name':'Casco Urbano: Colonia Margarita'},
-            {'name':'Casco Urbano: Colonia San Francisco'},
-            {'name':'Casco Urbano: La Alameda'},
-            {'name':'Casco Urbano: La Cuchilla'},
-            {'name':'Casco Urbano: Monjón'},
-            {'name':'Casco Urbano: Sector Claveles'},
-            {'name':'Casco Urbano: Sector Maxeño'},
-            {'name':'Chirij Sin'},
-            {'name':'Loma larga'},
-            {'name':'Pabayal I'},
-            {'name':'Pabayal II'},
-            {'name':'Pabayal III'},
-            {'name':'San Juan Maza'},
-            {'name':'Sector el Carmen'},
-            {'name':'Sector Vásquez'},
+            'Cantón Camache chiquito, Sector Godínes'
+            'Cantón Camache chiquito, Sector Patricio'
+            'Cantón Camache chiquito, Sector Ramirez'
+            'Cantón Camache chiquito, Sector Silvestre'
+            'Cantón Camache Grande Centro'
+            'Cantón Camache Grande, Sector Camino'
+            'Cantón Maza, San  Rubén'
+            'Cantón San Antoñito'
+            'Casco Urbano: Barrio la Unión'
+            'Casco Urbano: Barrio Pobre'
+            'Casco Urbano: Barrio Rico'
+            'Casco Urbano: Colonia el Rastro'
+            'Casco Urbano: Colonia el Tigre'
+            'Casco Urbano: Colonia Juárez'
+            'Casco Urbano: Colonia la Bendición'
+            'Casco Urbano: Colonia Margarita'
+            'Casco Urbano: Colonia San Francisco'
+            'Casco Urbano: La Alameda'
+            'Casco Urbano: La Cuchilla'
+            'Casco Urbano: Monjón'
+            'Casco Urbano: Sector Claveles'
+            'Casco Urbano: Sector Maxeño'
+            'Chirij Sin'
+            'Loma larga'
+            'Pabayal I'
+            'Pabayal II'
+            'Pabayal III'
+            'San Juan Maza'
+            'Sector el Carmen'
+            'Sector Vásquez'
         ]
         
         created = 0
