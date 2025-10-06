@@ -37,22 +37,19 @@ class Command(BaseCommand):
             'Sector el Carmen'
             'Sector Vásquez'
         ]
-        
+
         created = 0
-        for area_data in areas:
+        for area_name in areas:
             area, created_now = ServiceArea.objects.get_or_create(
-                name=area_data['name'],
-                defaults={
-                    'description': area_data['description'],
-                    'is_active': True
-                }
+                name=area_name,
+                defaults={'is_active': True}
             )
             if created_now:
                 created += 1
                 self.stdout.write(f"✓ Creado: {area.name}")
             else:
                 self.stdout.write(f"- Ya existe: {area.name}")
-        
+
         self.stdout.write(
             self.style.SUCCESS(f'\nTotal: {created} áreas de servicio creadas')
         )
