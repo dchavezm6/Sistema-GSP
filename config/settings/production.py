@@ -1,4 +1,3 @@
-# config/settings/production.py
 
 from .base import *
 from decouple import config, Csv
@@ -7,12 +6,19 @@ import os
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# Hosts permitidos (Railway provee esta variable automáticamente)
+# Remover debug_toolbar de INSTALLED_APPS si existe
+INSTALLED_APPS = [app for app in INSTALLED_APPS if app != 'debug_toolbar']
+
+# Remover debug_toolbar middleware si existe
+MIDDLEWARE = [m for m in MIDDLEWARE if 'debug_toolbar' not in m]
+
+# Hosts permitidos
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='').split(',') + [
-    '.railway.app',  # Permitir todos los subdominios de Railway
+    '.railway.app',
+    '.up.railway.app',
 ]
 
-# Database - Railway provee estas variables automáticamente
+# Database
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -39,7 +45,7 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# CSRF Trusted Origins (Railway)
+# CSRF Trusted Origins
 CSRF_TRUSTED_ORIGINS = [
     'https://*.railway.app',
     'https://*.up.railway.app',
@@ -48,7 +54,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Static files con WhiteNoise
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ← Debe estar aquí
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -57,29 +63,23 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Static files settings
+# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
-# WhiteNoise - Compresión y caché
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Logging mejorado para producción
+# Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
             'style': '{',
         },
     },
@@ -94,26 +94,9 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'INFO',
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'apps': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    },
 }
 
-# Email Settings (configurar según tu proveedor)
+# Email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
@@ -121,21 +104,3 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@municipalidad.gt')
-
-# Admin emails
-ADMINS = [
-    ('Admin Municipal', config('ADMIN_EMAIL', default='admin@municipalidad.gt')),
-]
-
-# Cache (opcional - para mejorar performance)
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-    }
-}
-
-# Session settings
-SESSION_COOKIE_AGE = 3600  # 1 hora
-SESSION_SAVE_EVERY_REQUEST = True
-SESSION_COOKIE_HTTPONLY = True
