@@ -1,112 +1,37 @@
 from django.core.management.base import BaseCommand
-from apps.requests.models import ServiceType, ServiceArea
-
+from apps.requests.models import ServiceType
 
 class Command(BaseCommand):
-    help = 'Crear tipos de servicios y áreas iniciales'
+    help = 'Crea tipos de servicio iniciales'
 
     def handle(self, *args, **options):
-        # Tipos de servicios
-        service_types = [
-            {
-                'name': 'Suministro de agua',
-                'description': 'Problemas relacionados con el suministro de agua',
-                'icon_class': 'bi-droplet'
-            },
-            {
-                'name': 'Alumbrado Público',
-                'description': 'Problemas con el alumbrado público y electricidad',
-                'icon_class': 'bi-lightbulb'
-            },
-            {
-                'name': 'Drenajes',
-                'description': 'Problemas con drenajes, alcantarillas y aguas residuales',
-                'icon_class': 'bi-water'
-            },
-            {
-                'name': 'Recolección de Basura',
-                'description': 'Servicios de recolección y manejo de desechos',
-                'icon_class': 'bi-trash'
-            },
-            {
-                'name': 'Vías y Calles',
-                'description': 'Mantenimiento de calles, banquetas y señalización',
-                'icon_class': 'bi-road'
-            },
-            {
-                'name': 'Parques y Jardines',
-                'description': 'Mantenimiento de áreas verdes y espacios públicos',
-                'icon_class': 'bi-tree'
-            },
-            {
-                'name': 'Seguridad Ciudadana',
-                'description': 'Temas relacionados con seguridad y orden público',
-                'icon_class': 'bi-shield-check'
-            },
-            {
-                'name': 'Otros Servicios',
-                'description': 'Otros servicios municipales no especificados',
-                'icon_class': 'bi-gear'
-            }
+        services = [
+            {'name': 'Suministro de Agua', 'description': 'Solicitudes relacionadas con agua potable', 'icon_class': 'fas fa-tint'},
+            {'name': 'Alumbrado Público', 'description': 'Reportes de alumbrado público', 'icon_class': 'fas fa-lightbulb'},
+            {'name': 'Recolección de Basura', 'description': 'Servicios de recolección de desechos', 'icon_class': 'fas fa-trash'},
+            {'name': 'Mantenimiento de Calles', 'description': 'Baches, pavimento, señalización', 'icon_class': 'fas fa-road'},
+            {'name': 'Parques y Jardines', 'description': 'Mantenimiento de áreas verdes', 'icon_class': 'fas fa-tree'},
+            {'name': 'Drenajes', 'description': 'Sistema de drenaje y alcantarillado', 'icon_class': 'fas fa-water'},
+            {'name': 'Limpieza Pública', 'description': 'Limpieza de áreas públicas', 'icon_class': 'fas fa-broom'},
+            {'name': 'Mercado Municipal', 'description': 'Servicios del mercado municipal', 'icon_class': 'fas fa-store'},
         ]
-
-        for service_data in service_types:
-            service_type, created = ServiceType.objects.get_or_create(
+        
+        created = 0
+        for service_data in services:
+            service, created_now = ServiceType.objects.get_or_create(
                 name=service_data['name'],
-                defaults=service_data
+                defaults={
+                    'description': service_data['description'],
+                    'icon_class': service_data['icon_class'],
+                    'is_active': True
+                }
             )
-            if created:
-                self.stdout.write(
-                    self.style.SUCCESS(f'Tipo de servicio creado: {service_type.name}')
-                )
+            if created_now:
+                created += 1
+                self.stdout.write(f"✓ Creado: {service.name}")
             else:
-                self.stdout.write(
-                    self.style.WARNING(f'Tipo de servicio ya existe: {service_type.name}')
-                )
-
-        # Áreas de servicio
-        service_areas = [
-            'Barrio Claveles',
-            'Barrio La Alameda',
-            'Barrio La Cuchilla',
-            'Barrio Monte Sinaí',
-            'Barrio Pobre',
-            'Barrio Rico',
-            'Camaché Chiquito sector Godínez',
-            'Camaché Chiquito sector Loma Larga',
-            'Camaché Chiquito sector Patricio',
-            'Camaché Chiquito sector Ramírez',
-            'Camaché Chiquito sector Silvestre',
-            'Camaché Grande sector Camino',
-            'Camaché Grande sector Xivir',
-            'Chirij-Sin',
-            'Colonia Juárez',
-            'Colonia Rosales',
-            'Colonia San Francisco de Asís',
-            'Colonia San Jaime',
-            'La Trinidad',
-            'Mazá sector Argelia',
-            'Mazá sector San Antoñito',
-            'Mazá sector San Juan Mazá',
-            'Mazá sector San Rubén',
-            'Mazá sector Vásquez',
-            'San Juan Pabayal',
-            'Sector Maxeño'
-        ]
-
-        for area_name in service_areas:
-            service_area, created = ServiceArea.objects.get_or_create(
-                name=area_name
-            )
-            if created:
-                self.stdout.write(
-                    self.style.SUCCESS(f'Área de servicio creada: {service_area.name}')
-                )
-
+                self.stdout.write(f"- Ya existe: {service.name}")
+        
         self.stdout.write(
-            self.style.SUCCESS(
-                '\n=== DATOS INICIALES CREADOS ===\n'
-                f'Tipos de servicios: {ServiceType.objects.count()}\n'
-                f'Áreas de servicio: {ServiceArea.objects.count()}\n'
-            )
+            self.style.SUCCESS(f'\nTotal: {created} tipos de servicio creados')
         )
