@@ -6,7 +6,7 @@ import os
 
 DEBUG = False
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='').split(',') + [
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default=[]) + [
     '.railway.app',
     '.up.railway.app',
 ]
