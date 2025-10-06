@@ -8,30 +8,53 @@ dist/
 build/
 *.pyc
 
-# Django
-*.log
-db.sqlite3
-db.sqlite3-journal
-media/
-staticfiles/
-
-# Entorno virtual
+# Virtual Environment
 venv/
 env/
 ENV/
 municipal_env/
 .venv
 
-# Variables de entorno - MUY IMPORTANTE
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+*.sqlite3
+
+# Environment Variables - MUY IMPORTANTE
 .env
 *.env
 .env.local
+.env.production
 
-# IDE PyCharm
+# IDE
 .idea/
+.vscode/
 *.iml
+*.sublime-project
+*.sublime-workspace
 
-# Sistema operativo
+# OS
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
 
+# Backups
+*.bak
+backups/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Pytest
+.pytest_cache/
+
+# MyPy
+.mypy_cache/
