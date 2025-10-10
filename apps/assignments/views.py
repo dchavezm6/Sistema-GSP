@@ -5,12 +5,15 @@ from django.contrib import messages
 from django.views.generic import ListView, DetailView
 from django.urls import reverse_lazy
 from django.http import HttpResponseForbidden
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Avg, Sum
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 from .models import TaskAssignment, TaskUpdate, Notification
 from .forms import TaskAssignmentForm, TaskUpdateForm, TaskAcceptForm, TaskCompleteForm
 from apps.requests.models import ServiceRequest
 from apps.authentication.decorators import role_required
+
+User = get_user_model()
 
 
 class TaskAssignmentListView(LoginRequiredMixin, ListView):
@@ -238,9 +241,6 @@ def notification_list(request):
     return render(request, 'assignments/notification_list.html', {
         'notifications': notifications
     })
-
-
-from django.db.models import Count, Q, Avg, Sum
 
 
 @login_required
