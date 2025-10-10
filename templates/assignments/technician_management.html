@@ -1,0 +1,311 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Personal - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="fw-bold text-dark">
+                        <i class="bi bi-people-fill"></i> Gestión de Personal Técnico
+                    </h2>
+                    <p class="text-muted mb-0">Seguimiento de técnicos y su carga de trabajo</p>
+                </div>
+                <div>
+                    <a href="{% url 'authentication:dashboard' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas generales -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-people display-4 mb-2 opacity-75"></i>
+                    <h2 class="mb-1">{{ total_technicians }}</h2>
+                    <p class="mb-0 fw-bold">Técnicos Activos</p>
+                    <small class="opacity-75">Personal disponible</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle display-4 mb-2 opacity-75"></i>
+                    <h2 class="mb-1">{{ available_technicians }}</h2>
+                    <p class="mb-0 fw-bold">Disponibles</p>
+                    <small class="opacity-75">≤ 2 tareas activas</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-exclamation-triangle display-4 mb-2 opacity-75"></i>
+                    <h2 class="mb-1">{{ overloaded_technicians }}</h2>
+                    <p class="mb-0 fw-bold">Sobrecargados</p>
+                    <small class="opacity-75">≥ 5 tareas activas</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-list-task display-4 mb-2 opacity-75"></i>
+                    <h2 class="mb-1">{{ total_active_tasks }}</h2>
+                    <p class="mb-0 fw-bold">Tareas Activas</p>
+                    <small class="opacity-75">En el sistema</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de técnicos -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-person-lines-fill"></i> Personal Técnico
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Técnico</th>
+                            <th class="text-center">Contacto</th>
+                            <th class="text-center">Tareas Activas</th>
+                            <th class="text-center">Completadas</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-center">Horas Promedio</th>
+                            <th class="text-center">Horas Totales</th>
+                            <th class="text-center">Costo Materiales</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tech in technicians %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                                         style="width: 40px; height: 40px;">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                    <div>
+                                        <strong>{{ tech.get_full_name }}</strong>
+                                        <br>
+                                        <small class="text-muted">@{{ tech.username }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                {% if tech.phone %}
+                                <small>
+                                    <i class="bi bi-telephone"></i> {{ tech.phone }}<br>
+                                </small>
+                                {% endif %}
+                                {% if tech.email %}
+                                <small>
+                                    <i class="bi bi-envelope"></i> {{ tech.email }}
+                                </small>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if tech.active_assignments > 0 %}
+                                    <span class="badge bg-{% if tech.active_assignments >= 5 %}danger{% elif tech.active_assignments >= 3 %}warning{% else %}primary{% endif %} fs-6">
+                                        {{ tech.active_assignments }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">0</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-success fs-6">{{ tech.completed_assignments }}</span>
+                            </td>
+                            <td class="text-center">
+                                <strong>{{ tech.total_assignments }}</strong>
+                            </td>
+                            <td class="text-center">
+                                {% if tech.avg_hours %}
+                                    {{ tech.avg_hours|floatformat:1 }}h
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if tech.total_hours %}
+                                    <strong>{{ tech.total_hours|floatformat:1 }}h</strong>
+                                {% else %}
+                                    <span class="text-muted">0h</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if tech.total_cost %}
+                                    <span class="text-success">Q {{ tech.total_cost|floatformat:2 }}</span>
+                                {% else %}
+                                    <span class="text-muted">Q 0.00</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if tech.active_assignments == 0 %}
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle"></i> Disponible
+                                    </span>
+                                {% elif tech.active_assignments <= 2 %}
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-gear"></i> Ocupado
+                                    </span>
+                                {% elif tech.active_assignments <= 4 %}
+                                    <span class="badge bg-warning">
+                                        <i class="bi bi-exclamation-circle"></i> Muy Ocupado
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-exclamation-triangle"></i> Sobrecargado
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#techModal{{ tech.id }}"
+                                            title="Ver detalles">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <a href="{% url 'assignments:list' %}?assigned_to={{ tech.id }}"
+                                       class="btn btn-outline-success btn-sm"
+                                       title="Ver tareas">
+                                        <i class="bi bi-list-task"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Modal de detalles del técnico -->
+                        <div class="modal fade" id="techModal{{ tech.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title">
+                                            <i class="bi bi-person-badge"></i>
+                                            {{ tech.get_full_name }}
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary"><i class="bi bi-info-circle"></i> Información Personal</h6>
+                                                <p><strong>Usuario:</strong> @{{ tech.username }}</p>
+                                                <p><strong>Email:</strong> {{ tech.email|default:"No registrado" }}</p>
+                                                <p><strong>Teléfono:</strong> {{ tech.phone|default:"No registrado" }}</p>
+                                                <p><strong>Dirección:</strong> {{ tech.address|default:"No registrada" }}</p>
+                                                <p><strong>Miembro desde:</strong> {{ tech.date_joined|date:"d/m/Y" }}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-success"><i class="bi bi-bar-chart"></i> Estadísticas</h6>
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span>Tareas Activas:</span>
+                                                        <strong class="text-primary">{{ tech.active_assignments }}</strong>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span>Tareas Completadas:</span>
+                                                        <strong class="text-success">{{ tech.completed_assignments }}</strong>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span>Total de Tareas:</span>
+                                                        <strong>{{ tech.total_assignments }}</strong>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span>Horas Promedio/Tarea:</span>
+                                                        <strong>{{ tech.avg_hours|default:"0"|floatformat:1 }}h</strong>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span>Total Horas Trabajadas:</span>
+                                                        <strong>{{ tech.total_hours|default:"0"|floatformat:1 }}h</strong>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span>Costo Materiales:</span>
+                                                        <strong class="text-success">Q {{ tech.total_cost|default:"0"|floatformat:2 }}</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <a href="{% url 'assignments:list' %}?assigned_to={{ tech.id }}"
+                                           class="btn btn-primary">
+                                            <i class="bi bi-list-task"></i> Ver Sus Tareas
+                                        </a>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <tr>
+                            <td colspan="10" class="text-center py-5">
+                                <i class="bi bi-people display-4 text-muted"></i>
+                                <h5 class="mt-3">No hay técnicos registrados</h5>
+                                <p class="text-muted">Registre técnicos desde el panel de administración.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leyenda de estados -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="bi bi-info-circle"></i> Leyenda de Estados</h6>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <span class="badge bg-success me-2">Disponible</span>
+                            <small class="text-muted">0 tareas activas</small>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge bg-info me-2">Ocupado</span>
+                            <small class="text-muted">1-2 tareas activas</small>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge bg-warning me-2">Muy Ocupado</span>
+                            <small class="text-muted">3-4 tareas activas</small>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="badge bg-danger me-2">Sobrecargado</span>
+                            <small class="text-muted">5+ tareas activas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+.table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    transform: scale(1.01);
+}
+</style>
+{% endblock %}

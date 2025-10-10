@@ -238,3 +238,61 @@ def notification_list(request):
     return render(request, 'assignments/notification_list.html', {
         'notifications': notifications
     })
+
+
+from django.db.models import Count, Q, Avg, Sum
+
+
+@login_required
+@role_required(['ADMIN', 'MANAGER'])
+def technician_management(request):
+    """Vista para gestión de personal técnico"""
+
+    # Obtener todos los técnicos activos
+    technicians = User.objects.filter(
+        role='TECHNICIAN',
+        is_active=True
+    ).annotate(
+        # Contar asignaciones por estado
+        total_assignments=Count('assignments_received'),
+        active_assignments=Count('assignments_received', filter=Q(
+            assignments_received__status__in=['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS']
+        )),
+        completed_assignments=Count('assignments_received', filter=Q(
+            assignments_received__status='COMPLETED'
+        )),
+        # Promedio de horas trabajadas
+        avg_hours=Avg('assignments_received__actual_hours', filter=Q(
+            assignments_received__status='COMPLETED'
+        )),
+        # Total de horas trabajadas
+        total_hours=Sum('assignments_received__actual_hours', filter=Q(
+            assignments_received__status='COMPLETED'
+        )),
+        # Costo total de materiales
+        total_cost=Sum('assignments_received__materials_cost', filter=Q(
+            assignments_received__status='COMPLETED'
+        ))
+    ).order_by('-active_assignments', '-completed_assignments')
+
+    # Estadísticas generales
+    total_technicians = technicians.count()
+    total_active_tasks = TaskAssignment.objects.filter(
+        status__in=['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS']
+    ).count()
+
+    # Técnicos disponibles (sin tareas activas o con pocas)
+    available_technicians = technicians.filter(active_assignments__lte=2).count()
+
+    # Técnicos sobrecargados (más de 5 tareas activas)
+    overloaded_technicians = technicians.filter(active_assignments__gte=5).count()
+
+    context = {
+        'technicians': technicians,
+        'total_technicians': total_technicians,
+        'total_active_tasks': total_active_tasks,
+        'available_technicians': available_technicians,
+        'overloaded_technicians': overloaded_technicians,
+    }
+
+    return render(request, 'assignments/technician_management.html', context)

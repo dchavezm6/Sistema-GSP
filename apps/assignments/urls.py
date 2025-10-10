@@ -8,6 +8,7 @@ from .views import (
     add_task_update,
     complete_assignment,
     notification_list,
+    technician_management,
 )
 
 app_name = 'assignments'
@@ -21,4 +22,5 @@ urlpatterns = [
     path('<int:pk>/actualizar/', add_task_update, name='add_update'),
     path('<int:pk>/completar/', complete_assignment, name='complete'),
     path('notificaciones/', notification_list, name='notifications'),
+    path('personal/', technician_management, name='technician_management'),
 ]

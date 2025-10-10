@@ -20,7 +20,7 @@
                 <div class="card-body text-center">
                     <i class="bi bi-inbox display-4 mb-3"></i>
                     <h5>Solicitudes Pendientes</h5>
-                    <h3>0</h3>
+                    <h3 id="contador-pendientes">0</h3>
                     <a href="{% url 'requests:list' %}?status=PENDING" class="btn btn-light">
                         <i class="bi bi-eye"></i> Revisar
                     </a>
@@ -31,11 +31,11 @@
         <div class="col-lg-4 col-md-6 mb-4">
             <div class="card card-dashboard bg-warning text-white">
                 <div class="card-body text-center">
-                    <i class="bi bi-person-workspace display-4 mb-3"></i>
+                    <i class="bi bi-list-task display-4 mb-3"></i>
                     <h5>Gestionar Tareas</h5>
                     <p>Ver y asignar tareas a técnicos</p>
                     <a href="{% url 'assignments:list' %}" class="btn btn-light">
-                        <i class="bi bi-list"></i> Ver Tareas
+                        <i class="bi bi-clipboard-check"></i> Ver Tareas
                     </a>
                 </div>
             </div>
@@ -72,13 +72,36 @@
                 <div class="card-body text-center">
                     <i class="bi bi-people display-4 mb-3"></i>
                     <h5>Gestión de Personal</h5>
-                    <p>Ver técnicos y asignaciones</p>
-                    <a href="{% url 'assignments:list' %}" class="btn btn-light">
-                        <i class="bi bi-person-lines-fill"></i> Ver
+                    <p>Ver técnicos, disponibilidad y estadísticas</p>
+                    <a href="{% url 'assignments:technician_management' %}" class="btn btn-light">
+                        <i class="bi bi-person-lines-fill"></i> Ver Personal
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar estadísticas del sistema
+    fetch('{% url "requests:stats_api" %}')
+        .then(response => response.json())
+        .then(data => {
+            const pendientes = data.pending || 0;
+
+            if (typeof municipalApp !== 'undefined' && municipalApp.animarContador) {
+                municipalApp.animarContador('contador-pendientes', pendientes, 1000);
+            } else {
+                document.getElementById('contador-pendientes').textContent = pendientes;
+            }
+        })
+        .catch(error => {
+            console.error('Error al cargar estadísticas:', error);
+            document.getElementById('contador-pendientes').textContent = '0';
+        });
+});
+</script>
 {% endblock %}
