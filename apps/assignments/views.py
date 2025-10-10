@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.views.generic import ListView, DetailView
 from django.urls import reverse_lazy
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.db.models import Q, Count, Avg, Sum
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -296,3 +296,70 @@ def technician_management(request):
     }
 
     return render(request, 'assignments/technician_management.html', context)
+
+
+@login_required
+def technician_stats_api(request):
+    """API para obtener estadísticas del técnico"""
+
+    if request.user.role != 'TECHNICIAN':
+        return JsonResponse({'error': 'No autorizado'}, status=403)
+
+    my_assignments = TaskAssignment.objects.filter(assigned_to=request.user)
+
+    # Contar por estado
+    assigned_count = my_assignments.filter(status__in=['ASSIGNED', 'ACCEPTED']).count()
+    in_progress_count = my_assignments.filter(status='IN_PROGRESS').count()
+    completed_count = my_assignments.filter(status='COMPLETED').count()
+
+    # Últimas 5 tareas
+    recent_tasks = my_assignments.select_related(
+        'request', 'request__service_type'
+    ).order_by('-assigned_at')[:5]
+
+    recent_tasks_data = []
+    for task in recent_tasks:
+        recent_tasks_data.append({
+            'id': task.id,
+            'title': task.request.title,
+            'ticket': task.request.ticket_number,
+            'status': task.get_status_display(),
+            'status_class': get_status_class(task.status),
+            'priority': task.get_priority_display(),
+            'priority_class': get_priority_class(task.priority),
+            'assigned_at': task.assigned_at.strftime('%d/%m/%Y %H:%M'),
+            'url': f'/asignaciones/{task.id}/'
+        })
+
+    stats = {
+        'assigned': assigned_count,
+        'in_progress': in_progress_count,
+        'completed': completed_count,
+        'total': assigned_count + in_progress_count,
+        'recent_tasks': recent_tasks_data
+    }
+
+    return JsonResponse(stats)
+
+
+def get_status_class(status):
+    """Retorna la clase CSS para el estado"""
+    classes = {
+        'ASSIGNED': 'warning',
+        'ACCEPTED': 'info',
+        'IN_PROGRESS': 'primary',
+        'COMPLETED': 'success',
+        'CANCELLED': 'secondary',
+    }
+    return classes.get(status, 'secondary')
+
+
+def get_priority_class(priority):
+    """Retorna la clase CSS para la prioridad"""
+    classes = {
+        'LOW': 'secondary',
+        'MEDIUM': 'info',
+        'HIGH': 'warning',
+        'URGENT': 'danger',
+    }
+    return classes.get(priority, 'secondary')

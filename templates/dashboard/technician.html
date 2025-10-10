@@ -14,13 +14,49 @@
         </div>
     </div>
 
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-warning text-white shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard display-4 mb-2 opacity-75"></i>
+                    <h2 class="mb-1" id="contador-asignadas">0</h2>
+                    <p class="mb-0 fw-bold">Asignadas</p>
+                    <small class="opacity-75">Pendientes de aceptar</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-gear-fill display-4 mb-2 opacity-75"></i>
+                    <h2 class="mb-1" id="contador-progreso">0</h2>
+                    <p class="mb-0 fw-bold">En Progreso</p>
+                    <small class="opacity-75">Trabajos activos</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle-fill display-4 mb-2 opacity-75"></i>
+                    <h2 class="mb-1" id="contador-completadas">0</h2>
+                    <p class="mb-0 fw-bold">Completadas</p>
+                    <small class="opacity-75">Este mes</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards de acciones -->
     <div class="row">
         <div class="col-lg-6 col-md-6 mb-4">
-            <div class="card card-dashboard bg-primary text-white">
+            <div class="card card-dashboard bg-primary text-white h-100">
                 <div class="card-body text-center">
                     <i class="bi bi-list-task display-4 mb-3"></i>
                     <h5>Mis Tareas</h5>
-                    <h3>0</h3>
+                    <h3 id="contador-total-tareas">0</h3>
+                    <p>Ver todas mis tareas asignadas</p>
                     <a href="{% url 'assignments:list' %}" class="btn btn-light">
                         <i class="bi bi-eye"></i> Ver Todas
                     </a>
@@ -29,17 +65,134 @@
         </div>
 
         <div class="col-lg-6 col-md-6 mb-4">
-            <div class="card card-dashboard bg-success text-white">
+            <div class="card card-dashboard bg-success text-white h-100">
                 <div class="card-body text-center">
                     <i class="bi bi-check-circle display-4 mb-3"></i>
                     <h5>Registrar Progreso</h5>
-                    <p>Actualizar estado de trabajos</p>
-                    <a href="{% url 'assignments:list' %}" class="btn btn-light">
+                    <p>Actualizar estado de mis trabajos en curso</p>
+                    <a href="{% url 'assignments:list' %}?status=IN_PROGRESS" class="btn btn-light">
                         <i class="bi bi-pencil"></i> Actualizar
                     </a>
                 </div>
             </div>
         </div>
+
+        <div class="col-lg-12 mb-4">
+            <div class="card card-dashboard bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-check display-4 mb-3"></i>
+                    <h5>Tareas Pendientes de Aceptar</h5>
+                    <p>Revisar y aceptar nuevas asignaciones</p>
+                    <a href="{% url 'assignments:list' %}?status=ASSIGNED" class="btn btn-light">
+                        <i class="bi bi-hand-thumbs-up"></i> Ver Pendientes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tareas recientes -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history"></i> Mis Últimas Tareas
+                    </h5>
+                </div>
+                <div class="card-body" id="tareas-recientes">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar estadísticas de tareas del técnico desde la API
+    loadTechnicianStats();
+});
+
+function loadTechnicianStats() {
+    fetch('{% url "assignments:stats_api" %}')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al cargar estadísticas');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Animar contadores
+            if (typeof municipalApp !== 'undefined' && municipalApp.animarContador) {
+                municipalApp.animarContador('contador-asignadas', data.assigned, 1000);
+                municipalApp.animarContador('contador-progreso', data.in_progress, 1000);
+                municipalApp.animarContador('contador-completadas', data.completed, 1000);
+                municipalApp.animarContador('contador-total-tareas', data.total, 1000);
+            } else {
+                document.getElementById('contador-asignadas').textContent = data.assigned;
+                document.getElementById('contador-progreso').textContent = data.in_progress;
+                document.getElementById('contador-completadas').textContent = data.completed;
+                document.getElementById('contador-total-tareas').textContent = data.total;
+            }
+
+            // Cargar tareas recientes
+            displayRecentTasks(data.recent_tasks);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('contador-asignadas').textContent = '0';
+            document.getElementById('contador-progreso').textContent = '0';
+            document.getElementById('contador-completadas').textContent = '0';
+            document.getElementById('contador-total-tareas').textContent = '0';
+
+            document.getElementById('tareas-recientes').innerHTML =
+                '<div class="alert alert-warning mb-0"><i class="bi bi-exclamation-triangle"></i> No se pudieron cargar las tareas. Por favor, recarga la página.</div>';
+        });
+}
+
+function displayRecentTasks(tasks) {
+    const tareasContainer = document.getElementById('tareas-recientes');
+
+    if (!tasks || tasks.length === 0) {
+        tareasContainer.innerHTML =
+            '<div class="alert alert-info mb-0"><i class="bi bi-info-circle"></i> No tienes tareas asignadas en este momento.</div>';
+        return;
+    }
+
+    let html = '<div class="list-group">';
+
+    tasks.forEach(task => {
+        html += `
+            <a href="${task.url}" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">${task.title}</h6>
+                        <small class="text-muted">
+                            <i class="bi bi-ticket-detailed"></i> ${task.ticket} |
+                            <i class="bi bi-calendar3"></i> ${task.assigned_at}
+                        </small>
+                    </div>
+                    <div class="text-end ms-3">
+                        <span class="badge bg-${task.status_class}">${task.status}</span>
+                        <br>
+                        <span class="badge bg-${task.priority_class} mt-1">${task.priority}</span>
+                    </div>
+                </div>
+            </a>
+        `;
+    });
+
+    html += '</div>';
+    html += '<div class="text-center mt-3"><a href="{% url "assignments:list" %}" class="btn btn-outline-primary">Ver Todas las Tareas</a></div>';
+
+    tareasContainer.innerHTML = html;
+}
+</script>
 {% endblock %}
