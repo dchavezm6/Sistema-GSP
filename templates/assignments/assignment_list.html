@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Mis Tareas - {{ block.super }}{% endblock %}
+{% block title %}Gestión de Asignaciones - {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="container my-4">
@@ -16,6 +16,7 @@
                             Gestión de Asignaciones
                         {% endif %}
                     </h2>
+                    <p class="text-muted mb-0">Seguimiento de tareas y asignaciones</p>
                 </div>
             </div>
         </div>
@@ -24,46 +25,78 @@
     <!-- Estadísticas -->
     <div class="row mb-4">
         <div class="col-md-4">
-            <div class="card bg-warning text-white">
+            <div class="card bg-warning text-white shadow">
                 <div class="card-body text-center">
-                    <h3>{{ stats.assigned }}</h3>
-                    <p class="mb-0">Asignadas</p>
+                    <i class="bi bi-clipboard display-4 mb-2 opacity-75"></i>
+                    <h2 class="mb-1">{{ stats.assigned }}</h2>
+                    <p class="mb-0 fw-bold">Asignadas</p>
+                    <small class="opacity-75">Pendientes de iniciar</small>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card bg-primary text-white">
+            <div class="card bg-primary text-white shadow">
                 <div class="card-body text-center">
-                    <h3>{{ stats.in_progress }}</h3>
-                    <p class="mb-0">En Progreso</p>
+                    <i class="bi bi-gear-fill display-4 mb-2 opacity-75"></i>
+                    <h2 class="mb-1">{{ stats.in_progress }}</h2>
+                    <p class="mb-0 fw-bold">En Progreso</p>
+                    <small class="opacity-75">Trabajos activos</small>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card bg-success text-white">
+            <div class="card bg-success text-white shadow">
                 <div class="card-body text-center">
-                    <h3>{{ stats.completed|default:0 }}</h3>
-                    <p class="mb-0">Completadas</p>
+                    <i class="bi bi-check-circle-fill display-4 mb-2 opacity-75"></i>
+                    <h2 class="mb-1">{{ stats.completed }}</h2>
+                    <p class="mb-0 fw-bold">Completadas</p>
+                    <small class="opacity-75">Tareas finalizadas</small>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Filtros -->
-    <div class="card mb-4">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0">
+                        <i class="bi bi-funnel"></i> Filtros
+                    </h5>
+                </div>
+                <div class="col-md-6 text-end">
+                    <small class="text-muted">{{ assignments|length }} resultado{{ assignments|length|pluralize:"s" }}</small>
+                </div>
+            </div>
+        </div>
         <div class="card-body">
             <form method="get" class="row g-3">
                 <div class="col-md-4">
+                    <label class="form-label">Estado</label>
                     <select name="status" class="form-control">
                         <option value="">Todos los estados</option>
-                        <option value="ASSIGNED">Asignada</option>
-                        <option value="ACCEPTED">Aceptada</option>
-                        <option value="IN_PROGRESS">En Progreso</option>
-                        <option value="COMPLETED">Completada</option>
+                        <option value="ASSIGNED" {% if request.GET.status =='ASSIGNED' %}selected{% endif %}>Asignada</option>
+                        <option value="ACCEPTED" {% if request.GET.status =='ACCEPTED' %}selected{% endif %}>Aceptada</option>
+                        <option value="IN_PROGRESS" {% if request.GET.status =='IN_PROGRESS' %}selected{% endif %}>En Progreso</option>
+                        <option value="COMPLETED" {% if request.GET.status =='COMPLETED' %}selected{% endif %}>Completada</option>
+                        <option value="CANCELLED" {% if request.GET.status =='CANCELLED' %}selected{% endif %}>Cancelada</option>
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                <div class="col-md-4">
+                    <label class="form-label">Prioridad</label>
+                    <select name="priority" class="form-control">
+                        <option value="">Todas las prioridades</option>
+                        <option value="URGENT" {% if request.GET.priority =='URGENT' %}selected{% endif %}>Urgente</option>
+                        <option value="HIGH" {% if request.GET.priority =='HIGH' %}selected{% endif %}>Alta</option>
+                        <option value="MEDIUM" {% if request.GET.priority =='MEDIUM' %}selected{% endif %}>Media</option>
+                        <option value="LOW" {% if request.GET.priority =='LOW' %}selected{% endif %}>Baja</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
                 </div>
             </form>
         </div>
@@ -73,7 +106,7 @@
     <div class="row">
         {% for assignment in assignments %}
         <div class="col-12 mb-3">
-            <div class="card">
+            <div class="card shadow-sm hover-shadow">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-8">
@@ -83,10 +116,10 @@
                                         {{ assignment.request.title }}
                                     </a>
                                 </h5>
-                                <span class="badge bg-{{ assignment.get_status_display_class }} me-2">
+                                <span class="badge bg-{% if assignment.status == 'ASSIGNED' %}warning{% elif assignment.status == 'ACCEPTED' %}info{% elif assignment.status == 'IN_PROGRESS' %}primary{% elif assignment.status == 'COMPLETED' %}success{% else %}secondary{% endif %} me-2">
                                     {{ assignment.get_status_display }}
                                 </span>
-                                <span class="badge bg-secondary">
+                                <span class="badge bg-{% if assignment.priority == 'URGENT' %}danger{% elif assignment.priority == 'HIGH' %}warning{% elif assignment.priority == 'MEDIUM' %}info{% else %}secondary{% endif %}">
                                     {{ assignment.get_priority_display }}
                                 </span>
                                 {% if assignment.is_overdue %}
@@ -95,23 +128,73 @@
                                 </span>
                                 {% endif %}
                             </div>
+
                             <p class="text-muted mb-2">
-                                <strong>Ticket:</strong> {{ assignment.request.ticket_number }} |
-                                <strong>Asignada:</strong> {{ assignment.assigned_at|date:"d/m/Y H:i" }}
+                                <i class="bi bi-ticket-detailed"></i> <strong>Ticket:</strong> {{ assignment.request.ticket_number }}
+                                <span class="mx-2">|</span>
+                                <i class="bi bi-tools"></i> <strong>Servicio:</strong> {{ assignment.request.service_type.name }}
+                            </p>
+
+                            <p class="mb-2">
+                                <i class="bi bi-calendar3"></i> <strong>Asignada:</strong> {{ assignment.assigned_at|date:"d/m/Y H:i" }}
                                 {% if assignment.estimated_completion %}
-                                | <strong>Estimada:</strong> {{ assignment.estimated_completion|date:"d/m/Y H:i" }}
+                                <span class="mx-2">|</span>
+                                <i class="bi bi-clock"></i> <strong>Estimada:</strong> {{ assignment.estimated_completion|date:"d/m/Y H:i" }}
                                 {% endif %}
                             </p>
+
                             {% if user.role != 'TECHNICIAN' %}
                             <small class="text-muted">
-                                <i class="bi bi-person"></i> Asignado a: {{ assignment.assigned_to.get_full_name }}
+                                <i class="bi bi-person"></i> <strong>Asignado a:</strong> {{ assignment.assigned_to.get_full_name }}
+                                <span class="mx-2">|</span>
+                                <i class="bi bi-person-check"></i> <strong>Por:</strong> {{ assignment.assigned_by.get_full_name }}
                             </small>
                             {% endif %}
+
+                            {% if assignment.instructions %}
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle"></i> <strong>Instrucciones:</strong> {{ assignment.instructions|truncatechars:100 }}
+                                </small>
+                            </div>
+                            {% endif %}
                         </div>
+
                         <div class="col-md-4 text-end">
+                            <div class="mb-2">
+                                {% if assignment.estimated_hours %}
+                                <small class="text-muted d-block">
+                                    <i class="bi bi-stopwatch"></i> {{ assignment.estimated_hours }}h estimadas
+                                </small>
+                                {% endif %}
+                                {% if assignment.actual_hours %}
+                                <small class="text-success d-block">
+                                    <i class="bi bi-check2"></i> {{ assignment.actual_hours }}h trabajadas
+                                </small>
+                                {% endif %}
+                            </div>
+
                             <a href="{% url 'assignments:detail' assignment.pk %}" class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-eye"></i> Ver Detalles
                             </a>
+
+                            {% if user == assignment.assigned_to %}
+                                {% if assignment.status == 'ASSIGNED' %}
+                                <form method="post" action="{% url 'assignments:accept' assignment.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm" title="Aceptar tarea">
+                                        <i class="bi bi-check-circle"></i> Aceptar
+                                    </button>
+                                </form>
+                                {% elif assignment.status == 'ACCEPTED' %}
+                                <form method="post" action="{% url 'assignments:start' assignment.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary btn-sm" title="Iniciar trabajo">
+                                        <i class="bi bi-play-circle"></i> Iniciar
+                                    </button>
+                                </form>
+                                {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -119,12 +202,66 @@
         </div>
         {% empty %}
         <div class="col-12">
-            <div class="alert alert-info text-center">
-                <i class="bi bi-info-circle display-4"></i>
+            <div class="alert alert-info text-center shadow-sm">
+                <i class="bi bi-info-circle display-4 mb-3"></i>
                 <h4>No hay tareas asignadas</h4>
+                <p class="mb-0">
+                    {% if user.role == 'TECHNICIAN' %}
+                        No tienes tareas asignadas en este momento.
+                    {% else %}
+                        No hay asignaciones que coincidan con los criterios de búsqueda.
+                    {% endif %}
+                </p>
             </div>
         </div>
         {% endfor %}
     </div>
+
+    <!-- Paginación -->
+    {% if is_paginated %}
+    <nav aria-label="Paginación" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                    <i class="bi bi-chevron-double-left"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}">
+                    <i class="bi bi-chevron-double-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 </div>
+
+<style>
+.hover-shadow {
+    transition: all 0.3s ease;
+}
+.hover-shadow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+}
+</style>
 {% endblock %}
