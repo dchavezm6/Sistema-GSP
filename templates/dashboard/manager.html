@@ -14,56 +14,13 @@
         </div>
     </div>
 
-    <!-- Estadísticas rápidas -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white shadow">
-                <div class="card-body text-center">
-                    <i class="bi bi-inbox display-4 mb-2 opacity-75"></i>
-                    <h2 class="mb-1" id="contador-pendientes">0</h2>
-                    <p class="mb-0 fw-bold">Solicitudes Pendientes</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-info text-white shadow">
-                <div class="card-body text-center">
-                    <i class="bi bi-gear-fill display-4 mb-2 opacity-75"></i>
-                    <h2 class="mb-1" id="contador-progreso">0</h2>
-                    <p class="mb-0 fw-bold">En Progreso</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-success text-white shadow">
-                <div class="card-body text-center">
-                    <i class="bi bi-check-circle-fill display-4 mb-2 opacity-75"></i>
-                    <h2 class="mb-1" id="contador-completadas">0</h2>
-                    <p class="mb-0 fw-bold">Completadas</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-white shadow">
-                <div class="card-body text-center">
-                    <i class="bi bi-star-fill display-4 mb-2 opacity-75"></i>
-                    <h2 class="mb-1" id="promedio-satisfaccion-mini">
-                        <span class="spinner-border spinner-border-sm"></span>
-                    </h2>
-                    <p class="mb-0 fw-bold">Satisfacción</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cards de acciones principales -->
     <div class="row">
         <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card card-dashboard bg-primary text-white h-100">
+            <div class="card card-dashboard bg-primary text-white">
                 <div class="card-body text-center">
                     <i class="bi bi-inbox display-4 mb-3"></i>
                     <h5>Solicitudes Pendientes</h5>
-                    <p>Revisar solicitudes que requieren atención</p>
+                    <h3 id="contador-pendientes">0</h3>
                     <a href="{% url 'requests:list' %}?status=PENDING" class="btn btn-light">
                         <i class="bi bi-eye"></i> Revisar
                     </a>
@@ -72,7 +29,7 @@
         </div>
 
         <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card card-dashboard bg-warning text-white h-100">
+            <div class="card card-dashboard bg-warning text-white">
                 <div class="card-body text-center">
                     <i class="bi bi-list-task display-4 mb-3"></i>
                     <h5>Gestionar Tareas</h5>
@@ -85,20 +42,20 @@
         </div>
 
         <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card card-dashboard bg-info text-white h-100">
+            <div class="card card-dashboard bg-info text-white">
                 <div class="card-body text-center">
                     <i class="bi bi-bar-chart display-4 mb-3"></i>
                     <h5>Reportes Generales</h5>
-                    <p>Estadísticas de gestión y desempeño</p>
+                    <p>Estadísticas de gestión</p>
                     <a href="{% url 'reports:dashboard' %}" class="btn btn-light">
-                        <i class="bi bi-graph-up"></i> Ver Reportes
+                        <i class="bi bi-graph-up"></i> Ver
                     </a>
                 </div>
             </div>
         </div>
 
         <div class="col-lg-6 col-md-6 mb-4">
-            <div class="card card-dashboard bg-success text-white h-100">
+            <div class="card card-dashboard bg-success text-white">
                 <div class="card-body text-center">
                     <i class="bi bi-list-check display-4 mb-3"></i>
                     <h5>Todas las Solicitudes</h5>
@@ -111,7 +68,7 @@
         </div>
 
         <div class="col-lg-6 col-md-6 mb-4">
-            <div class="card card-dashboard bg-secondary text-white h-100">
+            <div class="card card-dashboard bg-secondary text-white">
                 <div class="card-body text-center">
                     <i class="bi bi-people display-4 mb-3"></i>
                     <h5>Gestión de Personal</h5>
@@ -123,63 +80,16 @@
             </div>
         </div>
 
-        <!-- NUEVA SECCIÓN: Participación Ciudadana -->
+        <!-- NUEVA CARD: Participación Ciudadana (SIMPLE) -->
         <div class="col-lg-12 mb-4">
-            <div class="card shadow-lg border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="card-body text-white p-4">
-                    <div class="text-center mb-4">
-                        <i class="bi bi-star-fill display-3 mb-3"></i>
-                        <h4 class="fw-bold">Participación Ciudadana</h4>
-                        <p class="mb-0">Resultados de las evaluaciones de satisfacción ciudadana</p>
-                    </div>
-
-                    <div class="row text-center" id="satisfaccion-stats">
-                        <div class="col-md-3 mb-3">
-                            <div class="bg-white bg-opacity-25 rounded p-3">
-                                <h3 class="mb-1" id="promedio-satisfaccion">
-                                    <div class="spinner-border spinner-border-sm"></div>
-                                </h3>
-                                <small class="d-block fw-bold">Calificación Promedio</small>
-                                <div id="estrellas-promedio" class="mt-2"></div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="bg-white bg-opacity-25 rounded p-3">
-                                <h3 class="mb-1" id="total-evaluaciones">
-                                    <div class="spinner-border spinner-border-sm"></div>
-                                </h3>
-                                <small class="d-block fw-bold">Evaluaciones Totales</small>
-                                <small class="text-white-50 d-block mt-1">Últimos 30 días</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="bg-white bg-opacity-25 rounded p-3">
-                                <h3 class="mb-1" id="porcentaje-recomendacion">
-                                    <div class="spinner-border spinner-border-sm"></div>
-                                </h3>
-                                <small class="d-block fw-bold">% Recomendarían</small>
-                                <small class="text-white-50 d-block mt-1">Nivel de satisfacción</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="bg-white bg-opacity-25 rounded p-3">
-                                <h3 class="mb-1" id="calidad-promedio">
-                                    <div class="spinner-border spinner-border-sm"></div>
-                                </h3>
-                                <small class="d-block fw-bold">Calidad de Servicio</small>
-                                <small class="text-white-50 d-block mt-1">Promedio de calidad</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <a href="{% url 'reports:satisfaction_list' %}" class="btn btn-light btn-lg">
-                            <i class="bi bi-star"></i> Ver Todas las Evaluaciones
-                        </a>
-                        <button onclick="actualizarEstadisticas()" class="btn btn-outline-light btn-lg ms-2">
-                            <i class="bi bi-arrow-clockwise"></i> Actualizar
-                        </button>
-                    </div>
+            <div class="card card-dashboard" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body text-center text-white">
+                    <i class="bi bi-star-fill display-4 mb-3"></i>
+                    <h5>Participación Ciudadana</h5>
+                    <p class="mb-3">Evaluar satisfacción y opiniones de los ciudadanos sobre los servicios prestados</p>
+                    <a href="{% url 'reports:satisfaction_list' %}" class="btn btn-light btn-lg">
+                        <i class="bi bi-star"></i> Ver Evaluaciones de Satisfacción
+                    </a>
                 </div>
             </div>
         </div>
@@ -190,109 +100,22 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    cargarEstadisticasGenerales();
-    cargarEstadisticasSatisfaccion();
-});
-
-function cargarEstadisticasGenerales() {
+    // Cargar estadísticas del sistema
     fetch('{% url "requests:stats_api" %}')
         .then(response => response.json())
         .then(data => {
             const pendientes = data.pending || 0;
-            const progreso = data.in_progress || 0;
-            const completadas = data.completed || 0;
 
             if (typeof municipalApp !== 'undefined' && municipalApp.animarContador) {
                 municipalApp.animarContador('contador-pendientes', pendientes, 1000);
-                municipalApp.animarContador('contador-progreso', progreso, 1000);
-                municipalApp.animarContador('contador-completadas', completadas, 1000);
             } else {
                 document.getElementById('contador-pendientes').textContent = pendientes;
-                document.getElementById('contador-progreso').textContent = progreso;
-                document.getElementById('contador-completadas').textContent = completadas;
             }
         })
         .catch(error => {
-            console.error('Error al cargar estadísticas generales:', error);
+            console.error('Error al cargar estadísticas:', error);
+            document.getElementById('contador-pendientes').textContent = '0';
         });
-}
-
-function cargarEstadisticasSatisfaccion() {
-    const hoy = new Date();
-    const hace30dias = new Date(hoy.getTime() - (30 * 24 * 60 * 60 * 1000));
-
-    const fechaDesde = hace30dias.toISOString().split('T')[0];
-    const fechaHasta = hoy.toISOString().split('T')[0];
-
-    fetch(`{% url 'reports:export' %}?type=satisfaction&date_from=${fechaDesde}&date_to=${fechaHasta}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data && data.total_evaluations > 0) {
-                // Promedio general
-                const promedio = data.average_rating.toFixed(1);
-                document.getElementById('promedio-satisfaccion').textContent = `${promedio}/5`;
-                document.getElementById('promedio-satisfaccion-mini').textContent = `${promedio}/5`;
-
-                // Estrellas
-                document.getElementById('estrellas-promedio').innerHTML =
-                    generarEstrellas(Math.round(data.average_rating));
-
-                // Total evaluaciones
-                document.getElementById('total-evaluaciones').textContent =
-                    data.total_evaluations;
-
-                // Porcentaje recomendación
-                const porcentaje = Math.round(data.would_recommend_percentage);
-                document.getElementById('porcentaje-recomendacion').textContent = `${porcentaje}%`;
-
-                // Calidad promedio
-                const calidad = data.average_quality ? data.average_quality.toFixed(1) : 'N/A';
-                document.getElementById('calidad-promedio').textContent = `${calidad}/5`;
-
-            } else {
-                // No hay datos
-                document.getElementById('promedio-satisfaccion').textContent = 'N/A';
-                document.getElementById('promedio-satisfaccion-mini').textContent = 'N/A';
-                document.getElementById('total-evaluaciones').textContent = '0';
-                document.getElementById('porcentaje-recomendacion').textContent = '0%';
-                document.getElementById('calidad-promedio').textContent = 'N/A';
-                document.getElementById('estrellas-promedio').innerHTML =
-                    '<small class="text-white-50">Sin evaluaciones</small>';
-            }
-        })
-        .catch(error => {
-            console.error('Error al cargar satisfacción:', error);
-            document.getElementById('promedio-satisfaccion').innerHTML =
-                '<small class="text-danger">Error</small>';
-            document.getElementById('promedio-satisfaccion-mini').innerHTML =
-                '<small>Error</small>';
-        });
-}
-
-function generarEstrellas(cantidad) {
-    let html = '';
-    for (let i = 0; i < 5; i++) {
-        if (i < cantidad) {
-            html += '<i class="bi bi-star-fill text-warning"></i>';
-        } else {
-            html += '<i class="bi bi-star text-white opacity-50"></i>';
-        }
-    }
-    return html;
-}
-
-function actualizarEstadisticas() {
-    // Mostrar indicador de carga
-    document.getElementById('promedio-satisfaccion').innerHTML =
-        '<div class="spinner-border spinner-border-sm"></div>';
-
-    // Recargar datos
-    cargarEstadisticasSatisfaccion();
-
-    // Mostrar mensaje
-    if (typeof municipalApp !== 'undefined' && municipalApp.mostrarToast) {
-        municipalApp.mostrarToast('Actualizando estadísticas...', 'info');
-    }
-}
+});
 </script>
 {% endblock %}
