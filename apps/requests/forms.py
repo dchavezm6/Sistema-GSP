@@ -100,7 +100,7 @@ class ServiceRequestForm(forms.ModelForm):
                 '<i class="bi bi-info-circle"></i> <strong>Importante:</strong> Después de crear la solicitud podrás subir fotografías como evidencia.'),
             HTML('</div>'),
             HTML('<div class="d-grid mt-4">'),
-            Submit('submit', 'Crear Solicitud', css_class='btn btn-primary btn-lg'),
+            Submit('submit', 'Enviar Solicitud', css_class='btn btn-primary btn-lg'),
             HTML('</div>'),
         )
 
