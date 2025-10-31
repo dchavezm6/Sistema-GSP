@@ -57,6 +57,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.core.context_processors.site_settings',
             ],
         },
     },
@@ -127,3 +128,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'Sistema Municipal <noreply@municipalidad.gt>'
+
+# Logos del sistema (Footer)
+LOGO_MUNICIPALIDAD_URL = config('LOGO_MUNICIPALIDAD_URL', default='')
+LOGO_UNIVERSIDAD_URL = config('LOGO_UNIVERSIDAD_URL', default='')

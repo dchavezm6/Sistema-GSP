@@ -282,3 +282,29 @@ main {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* ========================================
+   LOGOS DEL FOOTER
+   ======================================== */
+.footer-logo {
+    max-width: 100px;
+    height: auto;
+    max-height: 100px;
+    object-fit: contain;
+    transition: all 0.3s ease;
+    filter: brightness(0) invert(1); /* Convierte logos a blanco */
+    opacity: 0.9;
+}
+
+.footer-logo:hover {
+    transform: scale(1.05);
+    opacity: 1;
+}
+
+/* Responsive: logos más pequeños en móviles */
+@media (max-width: 768px) {
+    .footer-logo {
+        max-width: 80px;
+        max-height: 80px;
+    }
+}
