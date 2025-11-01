@@ -292,13 +292,16 @@ main {
     max-height: 100px;
     object-fit: contain;
     transition: all 0.3s ease;
-    filter: brightness(0) invert(1); /* Convierte logos a blanco */
     opacity: 0.9;
+    background-color: white;  /* ← Fondo blanco detrás del logo */
+    padding: 10px;            /* ← Espacio alrededor */
+    border-radius: 8px;       /* ← Bordes redondeados */
 }
 
 .footer-logo:hover {
     transform: scale(1.05);
     opacity: 1;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);  /* ← Sombra al hacer hover */
 }
 
 /* Responsive: logos más pequeños en móviles */
