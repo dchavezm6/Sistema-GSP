@@ -106,8 +106,8 @@
     <footer class="footer-municipal mt-auto">
         <div class="container">
             <div class="row">
-                <div class="col-lg-3 mb-4">
-                    <!-- Logo de la Municipalidad -->
+                <!-- Municipalidad -->
+                <div class="col-lg-3 mb-4 d-flex flex-column">
                     {% if LOGO_MUNICIPALIDAD_URL %}
                     <div class="text-center mb-3">
                         <img src="{{ LOGO_MUNICIPALIDAD_URL }}"
@@ -116,30 +116,40 @@
                              loading="lazy">
                     </div>
                     {% endif %}
-                    <h5><i class="bi bi-building"></i> Municipalidad</h5>
-                    <p>Santo Tomás La Unión<br>
-                    Comprometidos con mejorar la calidad de vida de nuestros ciudadanos.<br>
-                    Admon: <strong>Juan Pablo Chávez Velásquez</strong></p>
+                    <div class="footer-content">
+                        <h5><i class="bi bi-building"></i> Municipalidad</h5>
+                        <p>Santo Tomás La Unión<br>
+                        Comprometidos con mejorar la calidad de vida de nuestros ciudadanos.<br>
+                        Admon: <strong>Juan Pablo Chávez Velásquez</strong></p>
+                    </div>
                 </div>
 
-                <div class="col-lg-3 mb-4">
-                    <h5><i class="bi bi-telephone"></i> Contacto</h5>
-                    <p>
-                        <i class="bi bi-phone"></i> +502 1234-5678<br>
-                        <i class="bi bi-envelope"></i> info@municipalidad.gt
-                    </p>
+                <!-- Contacto -->
+                <div class="col-lg-3 mb-4 d-flex flex-column">
+                    <div class="footer-logo-spacer"></div>
+                    <div class="footer-content">
+                        <h5><i class="bi bi-telephone"></i> Contacto</h5>
+                        <p>
+                            <i class="bi bi-phone"></i> +502 1234-5678<br>
+                            <i class="bi bi-envelope"></i> info@municipalidad.gt
+                        </p>
+                    </div>
                 </div>
 
-                <div class="col-lg-3 mb-4">
-                    <h5><i class="bi bi-clock"></i> Horarios</h5>
-                    <p>
-                        Lunes a Viernes: 8:00 AM - 4:00 PM<br>
-                        Emergencias: 24/7
-                    </p>
+                <!-- Horarios -->
+                <div class="col-lg-3 mb-4 d-flex flex-column">
+                    <div class="footer-logo-spacer"></div>
+                    <div class="footer-content">
+                        <h5><i class="bi bi-clock"></i> Horarios</h5>
+                        <p>
+                            Lunes a Viernes: 8:00 AM - 4:00 PM<br>
+                            Emergencias: 24/7
+                        </p>
+                    </div>
                 </div>
 
-                <div class="col-lg-3 mb-4">
-                    <!-- Logo de la Universidad -->
+                <!-- Proyecto Académico -->
+                <div class="col-lg-3 mb-4 d-flex flex-column">
                     {% if LOGO_UNIVERSIDAD_URL %}
                     <div class="text-center mb-3">
                         <img src="{{ LOGO_UNIVERSIDAD_URL }}"
@@ -148,12 +158,14 @@
                              loading="lazy">
                     </div>
                     {% endif %}
-                    <h5><i class="bi bi-mortarboard"></i> Proyecto Académico</h5>
-                    <p>
-                        Universidad Mariano Gálvez de Guatemala<br>
-                        Ingeniería en Sistemas<br>
-                        Donado por <strong>Jose Daniel Chávez Monterroso</strong> como Proyecto de Graduación
-                    </p>
+                    <div class="footer-content">
+                        <h5><i class="bi bi-mortarboard"></i> Proyecto Académico</h5>
+                        <p>
+                            Universidad Mariano Gálvez de Guatemala<br>
+                            Ingeniería en Sistemas<br>
+                            Donado por <strong>Jose Daniel Chávez Monterroso</strong> como Proyecto de Graduación
+                        </p>
+                    </div>
                 </div>
             </div>
 

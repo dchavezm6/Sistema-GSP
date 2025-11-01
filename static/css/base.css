@@ -308,3 +308,35 @@ main {
         max-height: 80px;
     }
 }
+/* ========================================
+   ALINEACIÓN DEL FOOTER
+   ======================================== */
+
+/* Espacio para alinear columnas sin logo */
+.footer-logo-spacer {
+    height: 120px; /* Mismo alto que el logo + margen */
+    margin-bottom: 1rem;
+}
+
+/* Asegurar que el contenido esté alineado */
+.footer-content {
+    flex: 1;
+}
+
+/* Alinear títulos h5 del footer */
+.footer-municipal h5 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* Responsive: eliminar espaciador en móviles */
+@media (max-width: 991px) {
+    .footer-logo-spacer {
+        height: 0;
+        margin-bottom: 0;
+    }
+
+    .footer-municipal .col-lg-3 {
+        text-align: center;
+    }
+}
